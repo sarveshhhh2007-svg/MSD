@@ -285,3 +285,81 @@ export function getMockTimetable(sectionId: number = 1) {
   ];
 }
 
+export function getMockPolicy() {
+  return {
+    medical_policy: "COUNTS_AS_ABSENT",
+    od_policy: "COUNTS_AS_ATTENDED",
+    min_attendance_threshold: 0.75,
+    max_od_days_per_semester: 10
+  };
+}
+
+export function getMockLeaveSimulation(payload: any, sectionId: number = 1) {
+  const isOD = payload.leave_type === "OD";
+  const drop = isOD ? 0 : 3.8;
+  const currentOverall = 86.4;
+  const simulatedOverall = isOD ? currentOverall : Math.max(0, currentOverall - drop);
+
+  return {
+    leave_type: payload.leave_type,
+    start_date: payload.start_date,
+    end_date: payload.end_date,
+    policy_used: isOD ? "COUNTS_AS_ATTENDED" : (payload.policy_mode || "COUNTS_AS_ABSENT"),
+    total_affected_classes: 7,
+    overall_attendance_before: currentOverall,
+    overall_attendance_after: Math.round(simulatedOverall * 10) / 10,
+    status_summary: {
+      SAFE: isOD ? 4 : 2,
+      WATCH: isOD ? 1 : 2,
+      CRITICAL: isOD ? 0 : 1
+    },
+    subject_impacts: [
+      {
+        subject_id: 1,
+        code: "21ECC101J",
+        name: "Digital Logic Design & Microprocessors",
+        affected_periods: 2,
+        current_pct: 85.0,
+        simulated_pct: isOD ? 85.0 : 80.0,
+        simulated_safe_absences: isOD ? 4 : 2,
+        simulated_status: isOD ? "SAFE" : "SAFE",
+        recovery_classes_needed: 0
+      },
+      {
+        subject_id: 2,
+        code: "21ECC102J",
+        name: "Electronic Circuits & Signal Conditioning",
+        affected_periods: 2,
+        current_pct: 73.7,
+        simulated_pct: isOD ? 73.7 : 68.4,
+        simulated_safe_absences: 0,
+        simulated_status: isOD ? "WATCH" : "CRITICAL",
+        recovery_classes_needed: isOD ? 2 : 4
+      },
+      {
+        subject_id: 3,
+        code: "21MAB102T",
+        name: "Transforms & Boundary Value Problems",
+        affected_periods: 1,
+        current_pct: 92.5,
+        simulated_pct: isOD ? 92.5 : 90.0,
+        simulated_safe_absences: isOD ? 7 : 6,
+        simulated_status: "SAFE",
+        recovery_classes_needed: 0
+      },
+      {
+        subject_id: 4,
+        code: "21ECC103J",
+        name: "Electromagnetic Fields & Waveguides",
+        affected_periods: 2,
+        current_pct: 60.0,
+        simulated_pct: isOD ? 60.0 : 54.3,
+        simulated_safe_absences: 0,
+        simulated_status: "CRITICAL",
+        recovery_classes_needed: isOD ? 6 : 8
+      }
+    ]
+  };
+}
+
+
