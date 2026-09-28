@@ -2,7 +2,17 @@
  * API Client for NExtclass Attendance Intelligence Platform
  */
 
-const API_BASE = "http://127.0.0.1:8000/api";
+const getApiBase = () => {
+  if (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_BASE) {
+    return process.env.NEXT_PUBLIC_API_BASE;
+  }
+  if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+    return "/api";
+  }
+  return "http://127.0.0.1:8000/api";
+};
+
+const API_BASE = getApiBase();
 
 export interface SubjectData {
   id: number;
