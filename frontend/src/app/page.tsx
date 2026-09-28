@@ -10,6 +10,7 @@ import PlannerView from "../components/PlannerView";
 import SimulatorView from "../components/SimulatorView";
 import RequirementsView from "../components/RequirementsView";
 import AnalyticsView from "../components/AnalyticsView";
+import FloorGridView from "../components/FloorGridView";
 import AdvisorChatModal from "../components/AdvisorChatModal";
 import {
   fetchSections,
@@ -131,6 +132,10 @@ export default function Home() {
               sectionId={selectedSectionId}
               onRefreshData={loadDashboardData}
             />
+          )}
+
+          {activeTab === "floorgrid" && (
+            <FloorGridView />
           )}
 
           {activeTab === "simulator" && (

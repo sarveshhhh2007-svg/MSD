@@ -111,7 +111,7 @@ export default function PlannerView({ sectionId, onRefreshData }: PlannerViewPro
             >
               <span className="text-[10px] uppercase font-semibold block">{dayName}</span>
               <span className="text-base font-bold block leading-tight">{dayNum}</span>
-              <span className="text-[9px] text-white/70 block">{month}</span>
+              <span className="text-[9px] text-[#F5F3EA]/70 block">{month}</span>
             </button>
           );
         })}

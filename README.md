@@ -141,7 +141,20 @@ $$m_{\text{max}} = \max\left(0, \left\lfloor A + R - T \cdot (C + R) \right\rflo
 - Scores subjects by attendance deficit, recovery ratio ($\frac{x_{\text{required}}}{R}$), and remaining margin.
 - Surfaced as high-priority alert cards to guide daily student decision-making.
 
-### 7. ✦ Attendance Advisor (AI Assistant)
+### 7. 🏢 Floor Grid (Campus Space Occupancy Engine)
+- Deterministic campus room availability organized floor-by-floor (Ground Floor to 6th Floor).
+- Evaluates real-time overlaps across all 13 official section timetables and scheduled class occurrences.
+- Status classification: 🟢 **`AVAILABLE`** (Zero scheduled periods during requested interval) vs 🔴 **`OCCUPIED`** (Scheduled class active with subject, faculty, and section details).
+- Real-time refresh with timestamp and room detail modals.
+
+### 8. ✦ AI Room Finder (Natural-Language Space Discovery)
+- Smart natural-language search bar with AI Violet (`#A78BFA`) accents.
+- Strict constraint parsing: Date, Start Time, Duration/End Time, Floor, AC Requirement, Minimum Capacity, and Lab preference.
+- **Full-Duration Availability**: Enforces that rooms must be free for the entire requested window (e.g. 2:00 PM – 4:00 PM).
+- **Connected Interaction**: Clicking any verified result card immediately scrolls to and highlights that room in the Floor Grid.
+- **Grounded Explanations & Fallbacks**: Never hallucinates room numbers; provides clear alternative suggestions if no exact matches exist.
+
+### 9. ✦ Attendance Advisor (AI Assistant)
 - Floating assistant modal backed by Gemini / LLM intent extraction.
 - **Tool-Call Grounded**: Queries deterministic functions (`get_current_attendance`, `calculate_safe_absences`, `simulate_leave`, `get_subject_risk`).
 - Answers questions like:

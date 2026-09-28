@@ -100,7 +100,7 @@ export default function RequirementsView({
                   onClick={() => setSelectedTarget(tgt.threshold)}
                   className={`w-full py-2 rounded-lg text-xs font-semibold transition-all ${
                     isActive
-                      ? "bg-[#7C5CFF] text-white shadow-sm"
+                      ? "bg-[#7C5CFF] text-[#F5F3EA] shadow-sm"
                       : "bg-[#151B2B] text-[#A7AEC2] hover:text-[#F5F3EA] border border-[#252D42]"
                   }`}
                 >
@@ -137,7 +137,7 @@ export default function RequirementsView({
           </span>
           <button
             onClick={() => setSelectedTarget(customThreshold / 100)}
-            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#151B2B] hover:bg-[#7C5CFF] hover:text-white text-[#F5F3EA] border border-[#252D42] transition-colors"
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#151B2B] hover:bg-[#7C5CFF] hover:text-[#F5F3EA] text-[#F5F3EA] border border-[#252D42] transition-colors"
           >
             Apply Custom Target
           </button>

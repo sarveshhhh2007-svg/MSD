@@ -168,3 +168,19 @@ class InstitutionalPolicy(Base):
     medical_policy = Column(String(50), default="EXCLUDED_FROM_DENOMINATOR") # COUNTS_AS_ATTENDED, EXCLUDED_FROM_DENOMINATOR, COUNTS_AS_ABSENT, NOT_CONFIGURED
     default_target = Column(Float, default=0.75)
     is_configured = Column(Boolean, default=True)
+
+
+class Room(Base):
+    __tablename__ = "rooms"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    room_number = Column(String(50), unique=True, index=True, nullable=False) # e.g. "IST 106", "IST 416"
+    building = Column(String(50), default="IST Building", nullable=False)      # "IST Building", "Tech Block"
+    floor = Column(Integer, default=0, nullable=False)                         # 0 = Ground, 1 = First, 2 = Second, etc.
+    floor_name = Column(String(50), default="GROUND FLOOR", nullable=False)    # "GROUND FLOOR", "FIRST FLOOR", etc.
+    capacity = Column(Integer, nullable=True)                                  # e.g. 60, 45, or None (Unknown)
+    has_ac = Column(Boolean, nullable=True)                                    # True, False, or None (Unknown)
+    has_projector = Column(Boolean, nullable=True)                             # True, False, or None (Unknown)
+    room_type = Column(String(50), default="CLASSROOM", nullable=False)        # "CLASSROOM", "LAB", "SEMINAR_HALL"
+    status = Column(String(50), default="ACTIVE", nullable=False)              # "ACTIVE", "MAINTENANCE"
+

@@ -289,7 +289,7 @@ All calculations are verified by backend rational mathematics, never fabricated 
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="p-2.5 rounded-lg bg-[#7C5CFF] hover:bg-[#9278FF] disabled:opacity-40 text-white transition-all shrink-0"
+              className="p-2.5 rounded-lg bg-[#7C5CFF] hover:bg-[#9278FF] disabled:opacity-40 text-[#F5F3EA] transition-all shrink-0"
             >
               <Send className="w-4 h-4" />
             </button>

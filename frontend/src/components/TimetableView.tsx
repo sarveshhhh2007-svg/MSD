@@ -261,7 +261,7 @@ export default function TimetableView({
               </select>
               <button
                 onClick={handleApplySelection}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#7C5CFF] hover:bg-[#9278FF] text-white shadow-sm transition-all whitespace-nowrap"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#7C5CFF] hover:bg-[#9278FF] text-[#F5F3EA] shadow-sm transition-all whitespace-nowrap"
               >
                 Load Timetable
               </button>

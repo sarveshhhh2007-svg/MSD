@@ -83,8 +83,8 @@ export default function DashboardView({
         );
       case "IRREVERSIBLE":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-red-950/60 text-red-400 border border-red-800">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#FF5C68]/15 text-[#FF5C68] border border-[#FF5C68]/30">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FF5C68]" />
             IRREVERSIBLE
           </span>
         );

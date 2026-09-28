@@ -190,3 +190,82 @@ class ChatMessageResponse(BaseModel):
     tool_calls: List[ChatToolExecution]
     ai_response: str
     structured_data: Optional[Dict[str, Any]] = None
+
+
+# ==================== ROOM OCCUPANCY & AI ROOM FINDER SCHEMAS ====================
+
+class RoomOut(BaseModel):
+    id: int
+    room_number: str
+    building: str
+    floor: int
+    floor_name: str
+    capacity: Optional[int] = None
+    has_ac: Optional[bool] = None
+    has_projector: Optional[bool] = None
+    room_type: str = "CLASSROOM"
+    status: str = "ACTIVE"
+
+    class Config:
+        from_attributes = True
+
+
+class RoomAvailabilityOut(BaseModel):
+    id: int
+    room_number: str
+    building: str
+    floor: int
+    floor_name: str
+    capacity: Optional[int] = None
+    has_ac: Optional[bool] = None
+    has_projector: Optional[bool] = None
+    room_type: str = "CLASSROOM"
+    status: str  # "AVAILABLE" or "OCCUPIED"
+    conflicts: List[Dict[str, Any]] = []
+    current_class: Optional[Dict[str, Any]] = None
+
+
+class FloorRoomsOut(BaseModel):
+    floor_number: int
+    floor_name: str
+    rooms: List[RoomAvailabilityOut]
+
+
+class FloorGridResponse(BaseModel):
+    target_date: str
+    query_time: str
+    interval: str
+    last_updated: str
+    total_rooms: int
+    available_count: int
+    occupied_count: int
+    floors: List[FloorRoomsOut]
+
+
+class RoomSearchQuery(BaseModel):
+    date: Optional[date] = None
+    start_time: str = "14:00"
+    end_time: str = "16:00"
+    floor: Optional[int] = None
+    building: Optional[str] = None
+    requires_ac: Optional[bool] = None
+    minimum_capacity: Optional[int] = None
+    requires_lab: Optional[bool] = None
+    room_type: Optional[str] = None
+    proximity_room: Optional[str] = None
+
+
+class AIRoomSearchRequest(BaseModel):
+    query: str
+    current_time: Optional[str] = None
+    current_date: Optional[date] = None
+
+
+class AIRoomSearchResponse(BaseModel):
+    query: str
+    parsed_constraints: Dict[str, Any]
+    verified_matches: List[Dict[str, Any]]
+    near_matches: List[Dict[str, Any]]
+    explanation: str
+    timestamp: str
+

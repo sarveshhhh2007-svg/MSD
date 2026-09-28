@@ -208,3 +208,101 @@ export async function sendAdvisorChat(message: string, sectionId: number = 1, ta
   if (!res.ok) throw new Error("Failed to send message to Attendance Advisor");
   return res.json();
 }
+
+// ==================== CAMPUS INTELLIGENCE & ROOM FINDER (ROUND 2) ====================
+
+export interface RoomData {
+  id: number;
+  room_number: string;
+  building: string;
+  floor: number;
+  floor_name: string;
+  capacity?: number | null;
+  has_ac?: boolean | null;
+  has_projector?: boolean | null;
+  room_type: string;
+  status: "AVAILABLE" | "OCCUPIED" | "ACTIVE";
+  conflicts?: any[];
+  current_class?: any;
+  available_window?: string;
+  note?: string;
+}
+
+export interface FloorData {
+  floor_number: number;
+  floor_name: string;
+  rooms: RoomData[];
+}
+
+export interface FloorGridResponse {
+  target_date: string;
+  query_time: string;
+  interval: string;
+  last_updated: string;
+  total_rooms: number;
+  available_count: number;
+  occupied_count: number;
+  floors: FloorData[];
+}
+
+export interface AIRoomSearchResult {
+  query: string;
+  parsed_constraints: {
+    date: string;
+    start_time: string;
+    end_time: string;
+    duration_minutes: number;
+    floor?: number | null;
+    requires_ac?: boolean | null;
+    minimum_capacity?: number | null;
+    requires_lab?: boolean | null;
+    proximity_room?: string | null;
+    raw_query: string;
+  };
+  verified_matches: RoomData[];
+  near_matches: RoomData[];
+  explanation: string;
+  timestamp: string;
+}
+
+export async function fetchFloorGrid(
+  targetDate?: string,
+  timeStr?: string,
+  building?: string,
+  floor?: number
+): Promise<FloorGridResponse> {
+  const params = new URLSearchParams();
+  if (targetDate) params.append("target_date", targetDate);
+  if (timeStr) params.append("time", timeStr);
+  if (building && building !== "ALL") params.append("building", building);
+  if (floor !== undefined && floor !== null) params.append("floor", floor.toString());
+
+  const res = await fetch(`${API_BASE}/rooms/availability?${params.toString()}`);
+  if (!res.ok) throw new Error("Failed to fetch floor grid availability");
+  return res.json();
+}
+
+export async function aiSearchRooms(
+  query: string,
+  currentTime?: string,
+  currentDate?: string
+): Promise<AIRoomSearchResult> {
+  const res = await fetch(`${API_BASE}/rooms/ai-search`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query,
+      current_time: currentTime,
+      current_date: currentDate,
+    }),
+  });
+  if (!res.ok) throw new Error("Failed to search rooms with AI");
+  return res.json();
+}
+
+export async function fetchFloors(): Promise<Array<{ floor: number; floor_name: string }>> {
+  const res = await fetch(`${API_BASE}/floors`);
+  if (!res.ok) throw new Error("Failed to fetch floors");
+  return res.json();
+}
+

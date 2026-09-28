@@ -13,14 +13,20 @@ from backend.app.database import get_db, init_db
 from backend.app.models import (
     AcademicTerm, Section, Subject, TimetableEntry,
     ClassOccurrence, AttendanceRecord, AttendanceSnapshot,
-    Requirement, InstitutionalPolicy, LeaveRecord
+    Requirement, InstitutionalPolicy, LeaveRecord, Room
 )
 from backend.app.schemas import (
     SectionOut, SubjectOut, TimetableEntryOut, ClassOccurrenceOut,
     DailyAttendanceUpdate, ManualAttendanceUpdate,
     OCRPreviewResponse, OCRConfirmRequest,
     LeaveSimulationRequest, LeaveSimulationResponse,
-    InstitutionalPolicyUpdate, ChatMessageRequest, ChatMessageResponse
+    InstitutionalPolicyUpdate, ChatMessageRequest, ChatMessageResponse,
+    RoomOut, RoomAvailabilityOut, FloorGridResponse, RoomSearchQuery,
+    AIRoomSearchRequest, AIRoomSearchResponse
+)
+from backend.app.room_engine import (
+    seed_rooms_if_empty, get_floor_grid_status,
+    deterministic_room_search, execute_ai_room_search
 )
 from backend.app.math_engine import (
     calculate_current_attendance,
@@ -483,3 +489,74 @@ def chat_with_advisor(payload: ChatMessageRequest, db: Session = Depends(get_db)
         default_target=payload.target_threshold
     )
     return advisor_result
+
+
+# ==================== CAMPUS INTELLIGENCE & ROOM FINDER (ROUND 2) ====================
+
+@app.get("/api/rooms", response_model=List[RoomOut])
+def list_rooms(db: Session = Depends(get_db)):
+    seed_rooms_if_empty(db)
+    return db.query(Room).filter(Room.status == "ACTIVE").order_by(Room.floor.asc(), Room.room_number.asc()).all()
+
+
+@app.get("/api/rooms/availability", response_model=FloorGridResponse)
+def get_rooms_availability(
+    target_date: Optional[date] = None,
+    time: Optional[str] = None,
+    building: Optional[str] = None,
+    floor: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
+    return get_floor_grid_status(db, target_date, time, building, floor)
+
+
+@app.get("/api/rooms/{room_id}", response_model=RoomOut)
+def get_room_by_id(room_id: int, db: Session = Depends(get_db)):
+    seed_rooms_if_empty(db)
+    r = db.query(Room).filter(Room.id == room_id).first()
+    if not r:
+        raise HTTPException(status_code=404, detail="Room not found")
+    return r
+
+
+@app.post("/api/rooms/search")
+def search_available_rooms(query: RoomSearchQuery, db: Session = Depends(get_db)):
+    t_date = query.date or date(2026, 9, 28)
+    return deterministic_room_search(
+        db=db,
+        target_date=t_date,
+        start_time=query.start_time,
+        end_time=query.end_time,
+        floor=query.floor,
+        building=query.building,
+        requires_ac=query.requires_ac,
+        minimum_capacity=query.minimum_capacity,
+        requires_lab=query.requires_lab,
+        room_type=query.room_type,
+        proximity_room=query.proximity_room
+    )
+
+
+@app.post("/api/rooms/ai-search", response_model=AIRoomSearchResponse)
+def ai_room_search_endpoint(payload: AIRoomSearchRequest, db: Session = Depends(get_db)):
+    return execute_ai_room_search(
+        db=db,
+        query=payload.query,
+        current_time=payload.current_time,
+        current_date=payload.current_date
+    )
+
+
+@app.get("/api/floors")
+def get_floors_list(db: Session = Depends(get_db)):
+    seed_rooms_if_empty(db)
+    floors = db.query(Room.floor, Room.floor_name).distinct().order_by(Room.floor.asc()).all()
+    return [{"floor": f[0], "floor_name": f[1]} for f in floors]
+
+
+@app.get("/api/floors/{floor_id}/rooms")
+def get_floor_rooms_endpoint(floor_id: int, db: Session = Depends(get_db)):
+    seed_rooms_if_empty(db)
+    rooms = db.query(Room).filter(Room.floor == floor_id, Room.status == "ACTIVE").order_by(Room.room_number.asc()).all()
+    return rooms
+
