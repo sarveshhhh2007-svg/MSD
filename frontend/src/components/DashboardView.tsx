@@ -114,7 +114,7 @@ export default function DashboardView({
   const calcMax = Math.round(((calcA + calcR) / (calcC + calcR)) * 1000) / 10;
 
   return (
-    <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8 bg-[#F7F4E8]">
+    <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8 bg-[#F7F4E8] dark:bg-[#080B14] transition-colors duration-200">
       {/* 1. HERO SECTION (Section 14) */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>

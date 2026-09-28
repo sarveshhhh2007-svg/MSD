@@ -13,15 +13,19 @@ import {
   ArrowRight,
   BookOpen,
   Calendar,
-  Layers
+  Layers,
+  Sun,
+  Moon
 } from "lucide-react";
 import { DEMO_USERS, DemoUser } from "../lib/auth";
 
 interface LoginViewProps {
   onLogin: (user: DemoUser) => void;
+  theme?: "light" | "dark";
+  onToggleTheme?: (theme: "light" | "dark") => void;
 }
 
-export default function LoginView({ onLogin }: LoginViewProps) {
+export default function LoginView({ onLogin, theme = "light", onToggleTheme }: LoginViewProps) {
   const [selectedUser, setSelectedUser] = useState<DemoUser>(DEMO_USERS[0]);
   const [studentId, setStudentId] = useState<string>("RA2311004010042");
   const [password, setPassword] = useState<string>("academic2026");
@@ -61,6 +65,19 @@ export default function LoginView({ onLogin }: LoginViewProps) {
 
       {/* Main Container */}
       <div className="w-full max-w-2xl bg-[#FFFDF8] dark:bg-[#0F1422] border border-[#E8E3D7] dark:border-[#252D42] rounded-[32px] p-8 md:p-10 shadow-xl shadow-black/5 dark:shadow-2xl relative z-10 space-y-8">
+        {/* Top bar with theme toggle */}
+        {onToggleTheme && (
+          <div className="flex justify-end -mt-2 -mr-2">
+            <button
+              onClick={() => onToggleTheme(theme === "dark" ? "light" : "dark")}
+              className="p-2 rounded-xl bg-[#FAFAFC] dark:bg-[#151B2B] border border-[#E8E3D7] dark:border-[#252D42] text-[#7A7A7A] hover:text-[#171717] dark:hover:text-[#F5F3EA] transition-all"
+              title="Toggle Light / Dark Mode"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4 text-[#FFD81A]" /> : <Moon className="w-4 h-4 text-[#7A7A7A]" />}
+            </button>
+          </div>
+        )}
+
         {/* Brand & Heading */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFD81A]/20 dark:bg-[#7C5CFF]/20 border border-[#FFD81A]/40 dark:border-[#7C5CFF]/40 text-[#171717] dark:text-[#9278FF] text-[11px] font-bold uppercase tracking-wider mb-1">

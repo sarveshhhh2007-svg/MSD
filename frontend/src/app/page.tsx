@@ -140,7 +140,7 @@ export default function Home() {
 
   // Render Login View if not authenticated
   if (!currentUser) {
-    return <LoginView onLogin={handleLogin} />;
+    return <LoginView onLogin={handleLogin} theme={theme} onToggleTheme={handleToggleTheme} />;
   }
 
   // Section 9: NEVER silently default a section; show clear configuration error if section missing or invalid
