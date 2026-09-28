@@ -201,10 +201,22 @@ def process_advisor_query(
                     "subject_code": sm.code if sm else ""
                 })
 
-        # Academic day & simulated clock (Academic session baseline: Monday 10:42)
-        academic_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-        current_day = "Monday"
-        current_time = "10:42"
+        # Academic day & simulated clock — DYNAMIC from system clock
+        from datetime import datetime as dt_now
+        academic_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        now = dt_now.now()
+        weekday_idx = now.weekday()  # 0=Monday ... 6=Sunday
+        if weekday_idx >= 6:  # Sunday → treat as Monday
+            current_day = "Monday"
+        else:
+            current_day = academic_days[weekday_idx]
+        current_time = now.strftime("%H:%M")
+
+        # Determine tomorrow's academic day
+        if weekday_idx >= 4:  # Friday/Saturday/Sunday → next Monday
+            tomorrow_day = "Monday"
+        else:
+            tomorrow_day = academic_days[weekday_idx + 1]
         
         # Sort classes for current day
         todays = sorted(
@@ -212,7 +224,7 @@ def process_advisor_query(
             key=lambda x: x["period_number"]
         )
         tomorrows = sorted(
-            [r for r in tt_records if r["day_of_week"].lower() == "tuesday"],
+            [r for r in tt_records if r["day_of_week"].lower() == tomorrow_day.lower()],
             key=lambda x: x["period_number"]
         )
 
@@ -233,7 +245,7 @@ def process_advisor_query(
                         "room": next_class["room"]
                     }
                 })
-                day_prefix = "Tomorrow (Tuesday)" if is_tomorrow else f"Today ({current_day})"
+                day_prefix = f"Tomorrow ({tomorrow_day})" if is_tomorrow else f"Today ({current_day})"
                 response_text = f"""### Next Scheduled Class for {sec_name}
 
 • **Subject:** **{next_class['subject_name']}** ({next_class['subject_code']})
@@ -246,7 +258,6 @@ def process_advisor_query(
                 response_text = f"You don't have any further scheduled classes for {sec_name}."
 
         elif intent == "CURRENT_CLASS":
-            # Check period spanning 10:42 -> Period 2 (09:50 - 10:40) or Break (10:40 - 10:50)
             in_session = [c for c in todays if c["start_time"] <= current_time <= c["end_time"]]
             if in_session:
                 curr = in_session[0]
@@ -262,10 +273,18 @@ def process_advisor_query(
 • **Room:** 📍 **{curr['room']}**
 • **Status:** Active / In Progress"""
             else:
-                response_text = f"""### Current Status for {sec_name}
+                # Find next upcoming class
+                upcoming_now = [c for c in todays if c["start_time"] > current_time]
+                if upcoming_now:
+                    nxt = upcoming_now[0]
+                    response_text = f"""### Current Status for {sec_name}
 
-At **{current_time}** ({current_day}), you are in the **Morning Tea Break (10:40 – 10:50 AM)**.
-Your next class begins at **10:50 AM**."""
+At **{current_time}** ({current_day}), you are between classes.
+Your next class (**{nxt['subject_name']}**) begins at **{nxt['start_time']}** in 📍 **{nxt['room']}**."""
+                else:
+                    response_text = f"""### Current Status for {sec_name}
+
+At **{current_time}** ({current_day}), you have no more classes scheduled for today."""
 
         elif intent == "TODAYS_CLASSES":
             tool_calls.append({
@@ -281,12 +300,15 @@ Your next class begins at **10:50 AM**."""
         elif intent == "TOMORROWS_CLASSES":
             tool_calls.append({
                 "tool_name": "query_timetable_daily_schedule",
-                "input_args": {"section": sec_name, "day": "Tuesday"},
+                "input_args": {"section": sec_name, "day": tomorrow_day},
                 "output_result": {"total_classes": len(tomorrows)}
             })
-            lines = [f"### Tomorrow's Schedule for {sec_name} (Tuesday)\n"]
-            for c in tomorrows:
-                lines.append(f"• **Period {c['period_number']}** ({c['start_time']} – {c['end_time']}): **{c['subject_name']}** in 📍 `{c['room']}`")
+            lines = [f"### Tomorrow's Schedule for {sec_name} ({tomorrow_day})\n"]
+            if tomorrows:
+                for c in tomorrows:
+                    lines.append(f"• **Period {c['period_number']}** ({c['start_time']} – {c['end_time']}): **{c['subject_name']}** in 📍 `{c['room']}`")
+            else:
+                lines.append(f"No classes scheduled for {tomorrow_day}.")
             response_text = "\n".join(lines)
 
         elif intent == "FIRST_CLASS_TODAY":
@@ -312,17 +334,57 @@ Your next class begins at **10:50 AM**."""
                 response_text = f"No classes scheduled today for {sec_name}."
 
         elif intent == "NEXT_FREE_PERIOD":
-            response_text = f"""### Next Free Period for {sec_name}
+            # Dynamically find next gap in today's schedule
+            free_found = False
+            for gi in range(len(todays) - 1):
+                gap_start = todays[gi]["end_time"]
+                gap_end = todays[gi + 1]["start_time"]
+                if gap_start > current_time and gap_start < gap_end:
+                    response_text = f"""### Next Free Period for {sec_name}
 
-According to your official timetable, you have an upcoming **Lunch Break from 12:30 PM to 01:20 PM (50 minutes)**.
-You can explore available campus spaces on the Floor Grid or 3D Map to reserve a study desk."""
+Your next free window is from **{gap_start}** to **{gap_end}** (between {todays[gi]['subject_name']} and {todays[gi + 1]['subject_name']}).
+You can explore available campus spaces on the Floor Grid or 3D Map."""
+                    free_found = True
+                    break
+            if not free_found:
+                if todays:
+                    last_end = todays[-1]["end_time"]
+                    response_text = f"""### Next Free Period for {sec_name}
+
+Your last class ends at **{last_end}**. You are free after that.
+Check the Floor Grid or 3D Map for available study spaces."""
+                else:
+                    response_text = f"No classes scheduled today for {sec_name}. You're free all day!"
 
         elif intent == "CLASS_AT_TIME":
             time_query = parsed.get("time_str", "")
-            response_text = f"""### Schedule Check for {sec_name} at {time_query}
+            # Normalize time query to HH:MM for comparison
+            import re as re_time
+            t_match = re_time.search(r"(\d{1,2})(?::(\d{2}))?\s*(am|pm)?", time_query.lower())
+            query_hh = "14:00"
+            if t_match:
+                hr = int(t_match.group(1))
+                mn = int(t_match.group(2) or 0)
+                ampm = t_match.group(3)
+                if ampm == "pm" and hr < 12:
+                    hr += 12
+                elif ampm == "am" and hr == 12:
+                    hr = 0
+                query_hh = f"{hr:02d}:{mn:02d}"
+            # Find class at that time
+            at_time = [c for c in todays if c["start_time"] <= query_hh <= c["end_time"]]
+            if at_time:
+                cl = at_time[0]
+                response_text = f"""### Schedule Check for {sec_name} at {time_query}
 
-Checking your timetable for {current_day}:
-At 2:00 PM (14:00), you have scheduled classes in Period 6 (01:20 – 02:10 PM) according to your academic slot allocation."""
+At **{time_query}** on {current_day}, you have:
+• **{cl['subject_name']}** ({cl['subject_code']})
+• **Time:** {cl['start_time']} – {cl['end_time']} (Period {cl['period_number']})
+• **Room:** 📍 **{cl['room']}**"""
+            else:
+                response_text = f"""### Schedule Check for {sec_name} at {time_query}
+
+You don't have a scheduled class at **{time_query}** on {current_day}."""
 
         return {
             "user_query": query,
@@ -488,14 +550,26 @@ Immediate consultation with course faculty ({sub.get('faculty_name', 'Faculty')}
             response_text = "All registered subjects have sufficient attendance buffer."
             
     else:
-        # General overview
+        # General overview — dynamic from actual data
         total_att = sum(s.get("attended", 0) for s in subjects)
         total_cond = sum(s.get("conducted", 0) for s in subjects)
         overall = round((total_att / total_cond * 100.0), 2) if total_cond > 0 else 0.0
-        response_text = f"""Good day, Sarvesh. 
+        crit_subs = [s for s in subjects if s.get("status") == "CRITICAL"]
+        watch_subs = [s for s in subjects if s.get("status") == "WATCH"]
+        
+        status_lines = []
+        if crit_subs:
+            for cs in crit_subs:
+                status_lines.append(f"• **{cs['name']}** — {cs.get('current_pct', 'N/A')}% (**CRITICAL**)")
+        if watch_subs:
+            for ws in watch_subs:
+                status_lines.append(f"• **{ws['name']}** — {ws.get('current_pct', 'N/A')}% (WATCH)")
+        
+        status_summary = "\n".join(status_lines) if status_lines else "All subjects are currently in safe standing."
+        
+        response_text = f"""Good day! Your overall academic attendance is currently **{overall}%** across {len(subjects)} subjects.
 
-Your overall academic attendance is currently **{overall}%** across {len(subjects)} subjects.
-You have **1 Critical subject** (Digital Logic Design at 72.5%) and **1 Watch subject** (Solid State Devices at 80.0%).
+{status_summary}
 
 How may I assist you with your semester planning today?"""
 

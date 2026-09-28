@@ -33,19 +33,37 @@ export default function AttendanceImportView({
   const [editConducted, setEditConducted] = useState<number>(0);
   const [confirmedMessage, setConfirmedMessage] = useState<string | null>(null);
 
+  const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
+  const [sectionSubjects, setSectionSubjects] = useState<any[]>([]);
+
   // Manual entry form
-  const [manualSubjectId, setManualSubjectId] = useState<number>(4); // DLD default
+  const [manualSubjectId, setManualSubjectId] = useState<number>(4);
   const [manualAttended, setManualAttended] = useState<number>(29);
   const [manualConducted, setManualConducted] = useState<number>(40);
   const [manualSuccess, setManualSuccess] = useState<boolean>(false);
 
-  const handleSimulateOCR = async () => {
+  // Load section subjects for matching and correction
+  React.useEffect(() => {
+    async function loadSubs() {
+      try {
+        const { fetchSubjects } = await import("../lib/api");
+        const list = await fetchSubjects(sectionId);
+        setSectionSubjects(list);
+        if (list.length > 0) setManualSubjectId(list[0].id);
+      } catch (err) {
+        console.error("Failed to load section subjects", err);
+      }
+    }
+    loadSubs();
+  }, [sectionId]);
+
+  const handleSimulateOCR = async (fileToUpload?: File) => {
     try {
       setLoading(true);
       setConfirmedMessage(null);
-      // Calls FastAPI OCR parser endpoint
-      const res = await parseAttendanceScreenshot(undefined, undefined, sectionId);
+      const res = await parseAttendanceScreenshot(undefined, fileToUpload, sectionId);
       setOcrResults(res);
+      setSelectedIndices(res.subjects.map((_: any, i: number) => i));
     } catch (err) {
       console.error("OCR parse error:", err);
     } finally {
@@ -58,7 +76,7 @@ export default function AttendanceImportView({
     try {
       setLoading(true);
       await confirmAttendanceImport(ocrResults.subjects);
-      setConfirmedMessage("All attendance records confirmed and recalculated!");
+      setConfirmedMessage("All attendance records confirmed and recalculated into deterministic engine!");
       onRefreshData();
     } catch (err) {
       console.error("Failed to confirm attendance:", err);
@@ -67,16 +85,53 @@ export default function AttendanceImportView({
     }
   };
 
+  const handleConfirmSelected = async () => {
+    if (!ocrResults || selectedIndices.length === 0) return;
+    try {
+      setLoading(true);
+      const toConfirm = ocrResults.subjects.filter((_: any, i: number) => selectedIndices.includes(i));
+      await confirmAttendanceImport(toConfirm);
+      setConfirmedMessage(`Confirmed ${toConfirm.length} selected record(s) into deterministic engine!`);
+      onRefreshData();
+    } catch (err) {
+      console.error("Failed to confirm selected attendance:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRejectRow = (idx: number) => {
+    if (!ocrResults) return;
+    const updated = ocrResults.subjects.filter((_: any, i: number) => i !== idx);
+    setOcrResults({ ...ocrResults, subjects: updated });
+    setSelectedIndices((prev) => prev.filter((i) => i !== idx).map((i) => (i > idx ? i - 1 : i)));
+  };
+
   const handleSaveEdit = (idx: number) => {
     if (!ocrResults) return;
     const updated = [...ocrResults.subjects];
     updated[idx].attended = editAttended;
     updated[idx].conducted = editConducted;
-    updated[idx].status = "VALID";
+    updated[idx].status = editAttended <= editConducted ? "VALID" : "INVALID";
     updated[idx].confidence = 1.0;
     updated[idx].confidence_tier = "HIGH";
     setOcrResults({ ...ocrResults, subjects: updated });
     setEditingRowIndex(null);
+  };
+
+  const handleCorrectSubject = (idx: number, newSubId: number) => {
+    if (!ocrResults) return;
+    const foundSub = sectionSubjects.find((s) => s.id === newSubId);
+    if (!foundSub) return;
+    const updated = [...ocrResults.subjects];
+    updated[idx].matched_subject_id = foundSub.id;
+    updated[idx].matched_subject_code = foundSub.code;
+    updated[idx].matched_subject_name = foundSub.name;
+    updated[idx].status = "VALID";
+    updated[idx].confidence = 0.95;
+    updated[idx].confidence_tier = "HIGH";
+    updated[idx].validation_error = null;
+    setOcrResults({ ...ocrResults, subjects: updated });
   };
 
   const handleManualSubmit = async (e: React.FormEvent) => {
@@ -145,21 +200,35 @@ export default function AttendanceImportView({
               Supports PNG, JPG, or PDF screenshots from SRM Academia, Evarsity, or CollPoll portals.
             </p>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <label className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#FFD81A] hover:bg-[#FACC15] text-[#171717] shadow-sm transition-all flex items-center gap-2 cursor-pointer active:scale-95">
+                <Upload className="w-4 h-4 text-[#171717]" />
+                <span>Upload Attendance Screenshot</span>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleSimulateOCR(f);
+                  }}
+                />
+              </label>
+
               <button
-                onClick={handleSimulateOCR}
+                onClick={() => handleSimulateOCR()}
                 disabled={loading}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#FFD81A] hover:bg-[#FACC15] text-[#171717] shadow-sm transition-all flex items-center gap-2 active:scale-95"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#FAFAFC] hover:bg-[#F7F4E8] text-[#171717] border border-[#E8E3D7] shadow-sm transition-all flex items-center gap-2 active:scale-95"
               >
                 {loading ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin text-[#171717]" />
-                    <span>Processing Vision AI...</span>
+                    <span>Llama 3.2 Vision Extracting...</span>
                   </>
                 ) : (
                   <>
-                    <FileImage className="w-4 h-4 text-[#171717]" />
-                    <span>Load SRM College ERP Sample Screenshot</span>
+                    <FileImage className="w-4 h-4 text-[#7A3DF0]" />
+                    <span>Load ERP Portal Sample</span>
                   </>
                 )}
               </button>
@@ -169,18 +238,18 @@ export default function AttendanceImportView({
           {/* OCR Pipeline Steps Visualization */}
           <div className="p-6 rounded-[28px] bg-[#FFFDF8] border border-[#E8E3D7] shadow-sm">
             <p className="text-[11px] uppercase tracking-wider font-bold text-[#7A7A7A] mb-4">
-              Deterministic Verification Architecture
+              Deterministic Verification Architecture (Llama 3.2 Vision + Backend Math Engine)
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
               <div className="p-4 rounded-2xl bg-[#FAFAFC] border border-[#E8E3D7]">
                 <span className="text-[10px] text-[#7A3DF0] font-mono font-bold block">STAGE 1</span>
-                <span className="font-bold text-[#171717] block mt-1">Vision OCR</span>
-                <span className="text-[11px] text-[#7A7A7A]">Extracts raw numbers</span>
+                <span className="font-bold text-[#171717] block mt-1">Llama 3.2 Vision</span>
+                <span className="text-[11px] text-[#7A7A7A]">Extracts table JSON (no final math)</span>
               </div>
               <div className="p-4 rounded-2xl bg-[#FAFAFC] border border-[#E8E3D7]">
                 <span className="text-[10px] text-[#7A3DF0] font-mono font-bold block">STAGE 2</span>
                 <span className="font-bold text-[#171717] block mt-1">Subject Matcher</span>
-                <span className="text-[11px] text-[#7A7A7A]">Code &rarr; Name &rarr; Alias</span>
+                <span className="text-[11px] text-[#7A7A7A]">Enrolled section subjects only</span>
               </div>
               <div className="p-4 rounded-2xl bg-[#FAFAFC] border border-[#E8E3D7]">
                 <span className="text-[10px] text-[#7A3DF0] font-mono font-bold block">STAGE 3</span>
@@ -190,7 +259,7 @@ export default function AttendanceImportView({
               <div className="p-4 rounded-2xl bg-[#FAFAFC] border border-[#E8E3D7]">
                 <span className="text-[10px] text-[#7A3DF0] font-mono font-bold block">STAGE 4</span>
                 <span className="font-bold text-[#171717] block mt-1">User Review</span>
-                <span className="text-[11px] text-[#7A7A7A]">Never commits blindly</span>
+                <span className="text-[11px] text-[#7A7A7A]">Confirm / Edit / Reject / Retry</span>
               </div>
             </div>
           </div>
@@ -198,24 +267,42 @@ export default function AttendanceImportView({
           {/* OCR Review Table */}
           {ocrResults && (
             <div className="p-6 rounded-[28px] bg-[#FFFDF8] border border-[#E8E3D7] space-y-4 shadow-sm">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h3 className="text-xs font-bold text-[#171717] uppercase tracking-wider">
-                    Extracted Attendance Table (Review Required)
+                    Extracted Attendance Table (Review &amp; Confirmation)
                   </h3>
                   <p className="text-[11px] text-[#7A7A7A] mt-0.5">
-                    Source: {ocrResults.filename} • Overall Confidence: {Math.round(ocrResults.overall_confidence * 100)}%
+                    Source: {ocrResults.filename} • Confidence: {Math.round(ocrResults.overall_confidence * 100)}% • Model: meta-llama/Llama-3.2-Vision
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => handleSimulateOCR()}
+                    disabled={loading}
+                    className="px-3 py-2 rounded-xl text-xs font-semibold bg-[#FAFAFC] hover:bg-[#F7F4E8] text-[#171717] border border-[#E8E3D7] flex items-center gap-1.5 shadow-sm transition-all"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5 text-[#7A7A7A]" />
+                    <span>Retry Extraction</span>
+                  </button>
+
+                  <button
+                    onClick={handleConfirmSelected}
+                    disabled={loading || selectedIndices.length === 0}
+                    className="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#FFD81A] hover:bg-[#FACC15] text-[#171717] border border-[#FFD81A] flex items-center gap-1.5 shadow-sm transition-all active:scale-95 disabled:opacity-40"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Confirm Selected ({selectedIndices.length})</span>
+                  </button>
+
                   <button
                     onClick={handleConfirmAll}
                     disabled={loading}
                     className="px-4 py-2 rounded-xl text-xs font-bold bg-[#45B36B] hover:bg-[#3ea05f] text-white flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
                   >
                     <Check className="w-4 h-4" />
-                    <span>Confirm All &amp; Calculate</span>
+                    <span>Confirm All</span>
                   </button>
                 </div>
               </div>
@@ -231,6 +318,20 @@ export default function AttendanceImportView({
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="border-b border-[#E8E3D7] text-[11px] text-[#7A7A7A] uppercase font-semibold">
+                      <th className="pb-3 w-8">
+                        <input
+                          type="checkbox"
+                          checked={ocrResults.subjects.length > 0 && selectedIndices.length === ocrResults.subjects.length}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedIndices(ocrResults.subjects.map((_: any, i: number) => i));
+                            } else {
+                              setSelectedIndices([]);
+                            }
+                          }}
+                          className="rounded border-[#E8E3D7]"
+                        />
+                      </th>
                       <th className="pb-3">Extracted Subject</th>
                       <th className="pb-3">Resolved Course</th>
                       <th className="pb-3 text-center">Attended</th>
@@ -245,20 +346,57 @@ export default function AttendanceImportView({
                     {ocrResults.subjects.map((row: any, idx: number) => {
                       const isEditing = editingRowIndex === idx;
                       const isHigh = row.confidence_tier === "HIGH";
+                      const isSelected = selectedIndices.includes(idx);
                       const pct = row.conducted > 0 ? Math.round((row.attended / row.conducted) * 100) : 0;
 
                       return (
-                        <tr key={idx} className="hover:bg-[#FAFAFC]/60 transition-colors">
+                        <tr key={idx} className={`hover:bg-[#FAFAFC]/60 transition-colors ${isSelected ? "bg-[#FFD81A]/5" : ""}`}>
+                          <td className="py-3">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedIndices((prev) => [...prev, idx]);
+                                } else {
+                                  setSelectedIndices((prev) => prev.filter((i) => i !== idx));
+                                }
+                              }}
+                              className="rounded border-[#E8E3D7]"
+                            />
+                          </td>
                           <td className="py-3 font-mono font-medium text-[#171717]">
-                            {row.raw_subject}
+                            <div>{row.raw_subject}</div>
+                            {row.validation_error && (
+                              <span className="text-[10px] text-[#FF5C68] font-sans font-medium block mt-0.5">
+                                ⚠ {row.validation_error}
+                              </span>
+                            )}
                           </td>
                           <td className="py-3">
-                            <span className="font-bold text-[#171717] block">
-                              {row.matched_subject_name || "Unmapped"}
-                            </span>
-                            <span className="text-[10px] text-[#7A7A7A] font-mono">
-                              {row.matched_subject_code || "Review needed"}
-                            </span>
+                            {isEditing ? (
+                              <select
+                                value={row.matched_subject_id || ""}
+                                onChange={(e) => handleCorrectSubject(idx, Number(e.target.value))}
+                                className="bg-[#FAFAFC] text-[11px] border border-[#FFD81A] rounded p-1 font-sans"
+                              >
+                                <option value="">Select Enrolled Subject...</option>
+                                {sectionSubjects.map((s) => (
+                                  <option key={s.id} value={s.id}>
+                                    {s.code} — {s.name}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <div>
+                                <span className="font-bold text-[#171717] block">
+                                  {row.matched_subject_name || "Subject Unmapped"}
+                                </span>
+                                <span className="text-[10px] text-[#7A7A7A] font-mono">
+                                  {row.matched_subject_code || "Verify required"}
+                                </span>
+                              </div>
+                            )}
                           </td>
 
                           {/* Attended & Conducted */}
@@ -307,8 +445,10 @@ export default function AttendanceImportView({
 
                           {/* Status */}
                           <td className="py-3 text-center">
-                            {isHigh ? (
+                            {row.status === "VALID" ? (
                               <span className="text-[10px] font-bold text-[#45B36B]">● Valid</span>
+                            ) : row.status === "INVALID" ? (
+                              <span className="text-[10px] font-bold text-[#FF5C68]">● Invalid</span>
                             ) : (
                               <span className="text-[10px] font-bold text-[#FF8A3D]">● Review</span>
                             )}
@@ -321,27 +461,38 @@ export default function AttendanceImportView({
                                 <button
                                   onClick={() => handleSaveEdit(idx)}
                                   className="p-1 rounded-lg bg-[#45B36B]/20 text-[#45B36B] hover:bg-[#45B36B]/30"
+                                  title="Save edit"
                                 >
                                   <Check className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   onClick={() => setEditingRowIndex(null)}
                                   className="p-1 rounded-lg bg-[#E74C3C]/20 text-[#E74C3C] hover:bg-[#E74C3C]/30"
+                                  title="Cancel"
                                 >
                                   <X className="w-3.5 h-3.5" />
                                 </button>
                               </div>
                             ) : (
-                              <button
-                                onClick={() => {
-                                  setEditingRowIndex(idx);
-                                  setEditAttended(row.attended);
-                                  setEditConducted(row.conducted);
-                                }}
-                                className="px-2.5 py-1 rounded-xl bg-[#FAFAFC] text-[#171717] hover:bg-[#F7F4E8] border border-[#E8E3D7] text-[11px] font-semibold transition-all shadow-sm"
-                              >
-                                Edit
-                              </button>
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  onClick={() => {
+                                    setEditingRowIndex(idx);
+                                    setEditAttended(row.attended);
+                                    setEditConducted(row.conducted);
+                                  }}
+                                  className="px-2.5 py-1 rounded-xl bg-[#FAFAFC] text-[#171717] hover:bg-[#F7F4E8] border border-[#E8E3D7] text-[11px] font-semibold transition-all shadow-sm"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => handleRejectRow(idx)}
+                                  className="p-1 rounded-xl text-[#7A7A7A] hover:text-[#FF5C68] hover:bg-[#FF5C68]/10 transition-colors"
+                                  title="Reject record"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
                             )}
                           </td>
                         </tr>
@@ -382,14 +533,11 @@ export default function AttendanceImportView({
                 onChange={(e) => setManualSubjectId(Number(e.target.value))}
                 className="w-full bg-[#FAFAFC] text-xs text-[#171717] font-medium border border-[#E8E3D7] rounded-xl p-3 focus:border-[#FFD81A] focus:outline-none transition-all shadow-sm"
               >
-                <option value={4}>21ECC203T — Digital Logic Design</option>
-                <option value={1}>21MAB201T — Transforms and Boundary Value Problems</option>
-                <option value={2}>21ECC201T — Solid State Devices</option>
-                <option value={3}>21CSS201T — Computer Organization &amp; Architecture</option>
-                <option value={5}>21ECC205T — Electromagnetic Theory</option>
-                <option value={6}>21LEM201T — Professional Ethics</option>
-                <option value={7}>21LEM202T — Universal Human Values-II</option>
-                <option value={8}>21ECC211L — Devices &amp; Digital IC Lab</option>
+                {sectionSubjects.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.code} — {s.name}
+                  </option>
+                ))}
               </select>
             </div>
 

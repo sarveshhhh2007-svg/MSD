@@ -179,8 +179,8 @@ export async function simulateLeave(payload: {
   end_date: string;
   policy_mode?: string;
   target_threshold?: number;
-}) {
-  const res = await fetch(`${API_BASE}/simulate/leave?section_id=1`, {
+}, sectionId: number = 1) {
+  const res = await fetch(`${API_BASE}/simulate/leave?section_id=${sectionId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

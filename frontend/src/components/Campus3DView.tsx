@@ -47,6 +47,9 @@ export default function Campus3DView({
   // Claim state (Requirement 30)
   const [claimedRoomNumber, setClaimedRoomNumber] = useState<string | null>(null);
   
+  // Room labels toggle (§25 — default OFF if visually dense)
+  const [showLabels, setShowLabels] = useState<boolean>(false);
+  
   // Live timestamp-based countdown (Requirement 29)
   const [secondsRemaining, setSecondsRemaining] = useState<number>(2488); // ~41m 28s default
 
@@ -217,6 +220,40 @@ export default function Campus3DView({
         roomLine.position.copy(roomMesh.position);
         buildingGroup.add(roomLine);
 
+        // Room label sprite (§23-24)
+        const canvas = document.createElement("canvas");
+        canvas.width = 256;
+        canvas.height = 64;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.fillStyle = "rgba(15, 20, 34, 0.85)";
+          const rr = 10;
+          ctx.beginPath();
+          ctx.moveTo(rr, 0);
+          ctx.lineTo(canvas.width - rr, 0);
+          ctx.quadraticCurveTo(canvas.width, 0, canvas.width, rr);
+          ctx.lineTo(canvas.width, canvas.height - rr);
+          ctx.quadraticCurveTo(canvas.width, canvas.height, canvas.width - rr, canvas.height);
+          ctx.lineTo(rr, canvas.height);
+          ctx.quadraticCurveTo(0, canvas.height, 0, canvas.height - rr);
+          ctx.lineTo(0, rr);
+          ctx.quadraticCurveTo(0, 0, rr, 0);
+          ctx.closePath();
+          ctx.fill();
+          ctx.font = "bold 28px monospace";
+          ctx.fillStyle = "#F5F3EA";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(room.room_number, canvas.width / 2, canvas.height / 2);
+        }
+        const labelTexture = new THREE.CanvasTexture(canvas);
+        const labelMaterial = new THREE.SpriteMaterial({ map: labelTexture, transparent: true, opacity: 0.95 });
+        const labelSprite = new THREE.Sprite(labelMaterial);
+        labelSprite.scale.set(4.2, 1.05, 1);
+        labelSprite.position.set(col, floorY + roomHeight + 1.0, row);
+        labelSprite.visible = showLabels;
+        buildingGroup.add(labelSprite);
+
         roomMeshes.push({ mesh: roomMesh, roomData: room, floorNum: fNum });
       });
     });
@@ -304,11 +341,52 @@ export default function Campus3DView({
       updateCamera();
     };
 
+    // Touch handlers for mobile (§42)
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (isDragging && e.touches.length === 1) {
+        const deltaX = e.touches[0].clientX - prevMousePos.x;
+        const deltaY = e.touches[0].clientY - prevMousePos.y;
+        prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        spherical.theta -= deltaX * 0.008;
+        spherical.phi = Math.max(0.2, Math.min(Math.PI / 2 - 0.05, spherical.phi - deltaY * 0.008));
+        updateCamera();
+      }
+    };
+    const onTouchEnd = (e: TouchEvent) => {
+      isDragging = false;
+      // Tap detection for room selection
+      if (e.changedTouches.length === 1) {
+        const rect = container.getBoundingClientRect();
+        const touch = e.changedTouches[0];
+        const mouseX = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+        const mouseY = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
+        const intersects = raycaster.intersectObjects(roomMeshes.map((r) => r.mesh));
+        if (intersects.length > 0) {
+          const hit = roomMeshes.find((r) => r.mesh === intersects[0].object);
+          if (hit) {
+            setActiveRoom(hit.roomData);
+            if (onSelectRoom) onSelectRoom(hit.roomData.room_number);
+          }
+        }
+      }
+    };
+
     container.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
     container.addEventListener("click", onClick);
     container.addEventListener("wheel", onWheel, { passive: false });
+    container.addEventListener("touchstart", onTouchStart, { passive: true });
+    container.addEventListener("touchmove", onTouchMove, { passive: true });
+    container.addEventListener("touchend", onTouchEnd, { passive: true });
 
     // Animation Loop
     let reqId: number;
@@ -335,10 +413,13 @@ export default function Campus3DView({
       window.removeEventListener("mouseup", onMouseUp);
       container.removeEventListener("click", onClick);
       container.removeEventListener("wheel", onWheel);
+      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchmove", onTouchMove);
+      container.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("resize", handleResize);
       renderer.dispose();
     };
-  }, [gridData, selectedFloor]);
+  }, [gridData, selectedFloor, showLabels]);
 
   // Handle WhatsApp Squad Message (Requirement 31)
   const handleCallTheSquad = (room: RoomData) => {
@@ -428,6 +509,17 @@ export default function Campus3DView({
             Occupied
           </span>
         </div>
+
+        {/* Label Toggle (§25) */}
+        <label className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[#FFFDF8] dark:bg-[#0F1422] border border-[#E8E3D7] dark:border-[#252D42] shadow-sm cursor-pointer text-xs font-bold text-[#171717] dark:text-[#F5F3EA] select-none">
+          <input
+            type="checkbox"
+            checked={showLabels}
+            onChange={(e) => setShowLabels(e.target.checked)}
+            className="w-3.5 h-3.5 rounded accent-[#7A3DF0] dark:accent-[#7C5CFF]"
+          />
+          <span>Room Labels</span>
+        </label>
       </div>
 
       {/* Main 3D Canvas Area */}
@@ -505,13 +597,13 @@ export default function Campus3DView({
               {/* Live Timestamp-based Countdown Banner (Requirement 29) */}
               <div className="p-4 rounded-2xl bg-[#FAFAFC] dark:bg-[#151B2B] border border-[#E8E3D7] dark:border-[#252D42] space-y-1 text-center">
                 <span className="text-[10px] uppercase font-bold text-[#7A7A7A] dark:text-[#70788F] tracking-wider block">
-                  Available Until 02:30 PM • Live Countdown
+                  Available According to Timetable • Live Countdown
                 </span>
                 <span className="text-2xl font-black font-mono text-[#171717] dark:text-[#F5F3EA] block">
                   {formatCountdown(secondsRemaining)}
                 </span>
                 <span className="text-[10px] text-[#45B36B] dark:text-[#35D07F] font-semibold block">
-                  Synchronized with official SRM IST timetable schedule
+                  Available according to timetable schedule
                 </span>
               </div>
 
@@ -579,6 +671,9 @@ export default function Campus3DView({
                   <span>Claim for My Session</span>
                 </button>
               )}
+              <p className="text-[10px] text-[#7A7A7A] dark:text-[#70788F] text-center font-mono">
+                *Session-level occupancy claim only. Not an institutional room reservation.
+              </p>
 
               {/* Call the Squad (WhatsApp dynamic message - Requirement 31) */}
               <button

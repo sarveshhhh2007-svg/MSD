@@ -19,11 +19,13 @@ import { simulateLeave, fetchPolicy, updatePolicy } from "../lib/api";
 interface SimulatorViewProps {
   selectedTarget: number;
   initialSubjectCode?: string;
+  sectionId?: number;
 }
 
 export default function SimulatorView({
   selectedTarget,
   initialSubjectCode,
+  sectionId = 1,
 }: SimulatorViewProps) {
   const [leaveType, setLeaveType] = useState<string>("MEDICAL");
   const [startDate, setStartDate] = useState<string>("2026-09-29");
@@ -60,7 +62,7 @@ export default function SimulatorView({
         end_date: endDate,
         policy_mode: policyMode,
         target_threshold: selectedTarget,
-      });
+      }, sectionId);
       setSimulationResult(res);
     } catch (err) {
       console.error("Simulation failed:", err);

@@ -215,10 +215,13 @@ export function getStoredAuthUser(): DemoUser | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem("nextclass_auth_user");
-    if (!raw) return DEMO_USERS[0]; // Default to Sarvesh Kumar for immediate interactive inspection
-    return JSON.parse(raw);
+    if (!raw) return null; // No silent default — user must authenticate
+    const parsed = JSON.parse(raw);
+    // Validate that stored user has a valid sectionId
+    if (!parsed || !parsed.sectionId || !parsed.id) return null;
+    return parsed;
   } catch {
-    return DEMO_USERS[0];
+    return null;
   }
 }
 
