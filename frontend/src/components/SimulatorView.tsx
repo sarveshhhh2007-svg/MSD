@@ -301,10 +301,10 @@ export default function SimulatorView({
             <div className="p-6 rounded-[28px] bg-[#FFFDF8] border border-[#E8E3D7] shadow-sm hover:-translate-y-1 transition-all">
               <span className="text-xs font-semibold text-[#7A7A7A] block">Simulated Critical Count</span>
               <span className="text-3xl font-extrabold text-[#E74C3C] mt-1 block">
-                {simulationResult.status_summary.CRITICAL}
+                {simulationResult?.status_summary?.CRITICAL ?? 0}
               </span>
               <span className="text-[11px] font-medium text-[#7A7A7A] mt-1 block">
-                {simulationResult.status_summary.WATCH} Watch subjects
+                {simulationResult?.status_summary?.WATCH ?? 0} Watch subjects
               </span>
             </div>
           </div>
@@ -340,56 +340,64 @@ export default function SimulatorView({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#E8E3D7] text-[#171717]">
-                  {simulationResult.subjects.map((sub: any) => {
-                    const isCritical = sub.status_after === "CRITICAL";
-                    const isWatch = sub.status_after === "WATCH";
+                  {(simulationResult?.subjects || simulationResult?.subject_impacts || []).map((sub: any) => {
+                    const isCritical = sub.status_after === "CRITICAL" || sub.simulated_status === "CRITICAL";
+                    const isWatch = sub.status_after === "WATCH" || sub.simulated_status === "WATCH";
+                    const subName = sub.subject_name || sub.name || sub.code;
+                    const subCode = sub.subject_code || sub.code;
+                    const affCount = sub.affected_classes ?? sub.affected_periods ?? 0;
+                    const currPct = sub.current_pct ?? 0;
+                    const simPct = sub.simulated_pct ?? 0;
+                    const safeNow = sub.current_safe_absences ?? sub.safe_absences ?? 0;
+                    const safeSim = sub.simulated_safe_absences ?? 0;
+                    const recov = sub.recovery_needed ?? sub.recovery_classes_needed ?? 0;
 
                     return (
                       <tr key={sub.subject_id} className="hover:bg-[#FAFAFC]/60 transition-colors">
                         <td className="py-3">
                           <span className="font-bold text-[#171717] block">
-                            {sub.subject_name}
+                            {subName}
                           </span>
                           <span className="text-[10px] text-[#7A7A7A] font-mono">
-                            {sub.subject_code}
+                            {subCode}
                           </span>
                         </td>
 
                         <td className="py-3 text-center">
                           <span
                             className={`font-mono font-extrabold ${
-                              sub.affected_classes > 0 ? "text-[#4C6EF5]" : "text-[#7A7A7A]"
+                              affCount > 0 ? "text-[#4C6EF5]" : "text-[#7A7A7A]"
                             }`}
                           >
-                            {sub.affected_classes}
+                            {affCount}
                           </span>
                         </td>
 
                         <td className="py-3 text-center font-mono font-bold">
-                          {sub.current_pct}%
+                          {currPct}%
                         </td>
 
                         <td className="py-3 text-center">
                           <span
                             className={`font-mono font-extrabold ${
-                              sub.simulated_pct < (sub.current_pct || 0)
+                              simPct < currPct
                                 ? "text-[#E74C3C]"
                                 : "text-[#45B36B]"
                             }`}
                           >
-                            {sub.simulated_pct}%
+                            {simPct}%
                           </span>
                         </td>
 
                         <td className="py-3 text-center font-mono">
-                          <span className="text-[#7A7A7A]">{sub.current_safe_absences}</span>
+                          <span className="text-[#7A7A7A]">{safeNow}</span>
                           <span className="mx-1 text-[#E8E3D7] font-bold">&rarr;</span>
                           <span
                             className={`font-bold ${
-                              sub.simulated_safe_absences === 0 ? "text-[#E74C3C]" : "text-[#45B36B]"
+                              safeSim === 0 ? "text-[#E74C3C]" : "text-[#45B36B]"
                             }`}
                           >
-                            {sub.simulated_safe_absences}
+                            {safeSim}
                           </span>
                         </td>
 
@@ -410,9 +418,9 @@ export default function SimulatorView({
                         </td>
 
                         <td className="py-3 text-xs">
-                          {sub.recovery_needed > 0 ? (
+                          {recov > 0 ? (
                             <span className="text-[#E74C3C] font-semibold">
-                              Need to attend {sub.recovery_needed} classes to recover
+                              Need to attend {recov} classes to recover
                             </span>
                           ) : (
                             <span className="text-[#45B36B] font-medium">Safe above threshold</span>
