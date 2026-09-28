@@ -3,8 +3,14 @@
  */
 
 const getApiBase = () => {
-  if (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_BASE) {
-    return process.env.NEXT_PUBLIC_API_BASE;
+  // Support private API_BASE (server-side runtime) or public NEXT_PUBLIC_API_BASE
+  if (typeof process !== "undefined") {
+    if (process.env.API_BASE) {
+      return process.env.API_BASE;
+    }
+    if (process.env.NEXT_PUBLIC_API_BASE) {
+      return process.env.NEXT_PUBLIC_API_BASE;
+    }
   }
   if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
     return "/api";
