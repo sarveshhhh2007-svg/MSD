@@ -21,7 +21,7 @@ import { DemoUser } from "../lib/auth";
 interface HeaderProps {
   sections: SectionData[];
   selectedSectionId: number;
-  setSelectedSectionId: (id: number) => void;
+  setSelectedSectionId?: (id: number) => void;
   selectedTarget: number;
   setSelectedTarget: (target: number) => void;
   onOpenUpload: () => void;
@@ -59,26 +59,19 @@ export default function Header({
 
   return (
     <header className="h-20 px-8 bg-[#F7F4E8] dark:bg-[#080B14] flex items-center justify-between shrink-0 gap-4 z-10 transition-colors duration-200 border-b border-[#E8E3D7]/60 dark:border-[#252D42]">
-      {/* Left: Section Switcher & Status Capsule */}
+      {/* Left: Verified Section Badge (Section Auto-Assigned) & Status Capsule */}
       <div className="flex items-center gap-3">
-        <div className="relative">
-          <select
-            value={selectedSectionId}
-            onChange={(e) => setSelectedSectionId(Number(e.target.value))}
-            className="appearance-none bg-[#FFFDF8] dark:bg-[#0F1422] text-xs font-bold text-[#171717] dark:text-[#F5F3EA] border border-[#E8E3D7] dark:border-[#252D42] rounded-full pl-4 pr-9 py-2 hover:border-[#FFD81A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FFD81A]/40 shadow-sm cursor-pointer"
-          >
-            {sections.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name} ({s.venue})
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="w-3.5 h-3.5 text-[#7A7A7A] dark:text-[#70788F] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#FFFDF8] dark:bg-[#0F1422] border border-[#E8E3D7] dark:border-[#252D42] text-xs font-bold text-[#171717] dark:text-[#F5F3EA] shadow-sm select-none">
+          <span className="w-2 h-2 rounded-full bg-[#FFD81A] dark:bg-[#7C5CFF]" />
+          <span>{currentUser?.sectionName || currentSection?.name || "Assigned Section"}</span>
+          <span className="text-[10px] text-[#7A7A7A] dark:text-[#70788F] font-mono font-medium">
+            ({currentSection?.venue || "Main Building"})
+          </span>
         </div>
 
         <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFFDF8] dark:bg-[#0F1422] border border-[#E8E3D7] dark:border-[#252D42] text-xs font-semibold text-[#171717] dark:text-[#F5F3EA] shadow-sm">
           <span className="w-2 h-2 rounded-full bg-[#45B36B] dark:bg-[#35D07F] animate-pulse" />
-          <span>Real-time Active</span>
+          <span>Section Auto-Resolved</span>
         </div>
       </div>
 

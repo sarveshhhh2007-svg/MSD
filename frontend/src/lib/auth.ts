@@ -14,44 +14,14 @@ export interface DemoUser {
 }
 
 export const DEMO_USERS: DemoUser[] = [
-  // 1. II ECE-DS A (Primary demo account)
+  // 1. I ECE-A (ID 1)
   {
     id: "user-1",
-    name: "Sarvesh Kumar",
-    studentId: "RA2311004010042",
-    email: "sarvesh@srmist.edu.in",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
-    sectionId: 1,
-    sectionName: "II ECE-DS A",
-    department: "ECE-DS",
-    year: "II Year",
-    semester: "IV Semester",
-    attendanceScenario: "borderline",
-    note: "Digital Logic Design is critical (72.5%), needs 3 classes to recover to 75%."
-  },
-  // 2. II ECE-DS B
-  {
-    id: "user-2",
-    name: "Ananya Sharma",
-    studentId: "RA2311004010088",
-    email: "ananya.s@srmist.edu.in",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
-    sectionId: 2,
-    sectionName: "II ECE-DS B",
-    department: "ECE-DS",
-    year: "II Year",
-    semester: "IV Semester",
-    attendanceScenario: "safe",
-    note: "High 88.4% attendance with 8 safe skips left across subjects."
-  },
-  // 3. I ECE-A
-  {
-    id: "user-3",
     name: "Rohan Mukherjee",
     studentId: "RA2411004010012",
     email: "rohan.m@srmist.edu.in",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
-    sectionId: 3,
+    sectionId: 1,
     sectionName: "I ECE-A",
     department: "ECE",
     year: "I Year",
@@ -59,14 +29,14 @@ export const DEMO_USERS: DemoUser[] = [
     attendanceScenario: "safe",
     note: "First year engineering foundation, 86.2% overall."
   },
-  // 4. I ECE-B & EEE
+  // 2. I ECE-B & EEE (ID 2)
   {
-    id: "user-4",
+    id: "user-2",
     name: "Pooja Varma",
     studentId: "RA2411004010055",
     email: "pooja.v@srmist.edu.in",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop&q=80",
-    sectionId: 4,
+    sectionId: 2,
     sectionName: "I ECE-B & EEE",
     department: "ECE",
     year: "I Year",
@@ -74,14 +44,14 @@ export const DEMO_USERS: DemoUser[] = [
     attendanceScenario: "borderline",
     note: "Borderline in Circuit Analysis, 76.0% buffer."
   },
-  // 5. I ECE-DS
+  // 3. I ECE-DS (ID 3)
   {
-    id: "user-5",
+    id: "user-3",
     name: "Aditya Nair",
     studentId: "RA2411004010102",
     email: "aditya.n@srmist.edu.in",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
-    sectionId: 5,
+    sectionId: 3,
     sectionName: "I ECE-DS",
     department: "ECE-DS",
     year: "I Year",
@@ -89,14 +59,14 @@ export const DEMO_USERS: DemoUser[] = [
     attendanceScenario: "high",
     note: "Honors track aspirant maintaining 91.5% attendance."
   },
-  // 6. I Biotech-B & Biomedical Engineering
+  // 4. I Biotech-B & Biomedical Engineering (ID 4)
   {
-    id: "user-6",
+    id: "user-4",
     name: "Divya Krishnan",
     studentId: "RA2411004010150",
     email: "divya.k@srmist.edu.in",
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
-    sectionId: 6,
+    sectionId: 4,
     sectionName: "I Biotech-B & Biomedical Engineering",
     department: "Biomedical",
     year: "I Year",
@@ -104,14 +74,14 @@ export const DEMO_USERS: DemoUser[] = [
     attendanceScenario: "safe",
     note: "Combined Biotech/BME cohort with 83.0% average."
   },
-  // 7. II BME
+  // 5. II BME (ID 5)
   {
-    id: "user-7",
+    id: "user-5",
     name: "Karthik Reddy",
     studentId: "RA2311004010201",
     email: "karthik.r@srmist.edu.in",
     avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80",
-    sectionId: 7,
+    sectionId: 5,
     sectionName: "II BME",
     department: "Biomedical",
     year: "II Year",
@@ -119,7 +89,37 @@ export const DEMO_USERS: DemoUser[] = [
     attendanceScenario: "critical",
     note: "Medical Device Instrumentation is at 69.0% (detention warning)."
   },
-  // 8. III BME
+  // 6. II ECE-DS A (ID 6)
+  {
+    id: "user-6",
+    name: "Sarvesh Kumar",
+    studentId: "RA2311004010042",
+    email: "sarvesh@srmist.edu.in",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    sectionId: 6,
+    sectionName: "II ECE-DS A",
+    department: "ECE-DS",
+    year: "II Year",
+    semester: "IV Semester",
+    attendanceScenario: "borderline",
+    note: "Digital Logic Design is critical (72.5%), needs 3 classes to recover to 75%."
+  },
+  // 7. II ECE-DS B (ID 7)
+  {
+    id: "user-7",
+    name: "Ananya Sharma",
+    studentId: "RA2311004010088",
+    email: "ananya.s@srmist.edu.in",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+    sectionId: 7,
+    sectionName: "II ECE-DS B",
+    department: "ECE-DS",
+    year: "II Year",
+    semester: "IV Semester",
+    attendanceScenario: "safe",
+    note: "High 88.4% attendance with 8 safe skips left across subjects."
+  },
+  // 8. III BME (ID 8)
   {
     id: "user-8",
     name: "Meera Sundaram",
@@ -134,7 +134,7 @@ export const DEMO_USERS: DemoUser[] = [
     attendanceScenario: "safe",
     note: "Clinical engineering semester, 85.5% aggregate."
   },
-  // 9. III ECE-A
+  // 9. III ECE-A (ID 9)
   {
     id: "user-9",
     name: "Vikram Sengupta",
@@ -149,7 +149,7 @@ export const DEMO_USERS: DemoUser[] = [
     attendanceScenario: "borderline",
     note: "VLSI Design is near 77%, 2 skips remaining."
   },
-  // 10. III ECE-B
+  // 10. III ECE-B (ID 10)
   {
     id: "user-10",
     name: "Sneha Iyer",
@@ -164,7 +164,7 @@ export const DEMO_USERS: DemoUser[] = [
     attendanceScenario: "safe",
     note: "Elective heavy semester, 87.0% aggregate."
   },
-  // 11. III ECE-DS
+  // 11. III ECE-DS (ID 11)
   {
     id: "user-11",
     name: "Abhinav Patel",
@@ -179,7 +179,7 @@ export const DEMO_USERS: DemoUser[] = [
     attendanceScenario: "high",
     note: "Data Science core with 92.0% placement clearance."
   },
-  // 12. IV ECE-A
+  // 12. IV ECE-A (ID 12)
   {
     id: "user-12",
     name: "Tanvi Deshmukh",
@@ -194,7 +194,7 @@ export const DEMO_USERS: DemoUser[] = [
     attendanceScenario: "safe",
     note: "Final year capstone project & internship semester."
   },
-  // 13. IV ECE-B
+  // 13. IV ECE-B (ID 13)
   {
     id: "user-13",
     name: "Arjun Srinivasan",

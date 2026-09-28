@@ -299,26 +299,36 @@ def get_analytics(section_id: int, target: float = 0.75, db: Session = Depends(g
 # ==================== ATTENDANCE OCR & IMPORT ====================
 
 @app.post("/api/attendance/parse", response_model=OCRPreviewResponse)
-def parse_attendance_screenshot(
+async def parse_attendance_screenshot(
     raw_text: Optional[str] = Form(None),
     file: Optional[UploadFile] = File(None),
     section_id: int = Form(1),
     db: Session = Depends(get_db)
 ):
+    from backend.app.llama_ocr import extract_attendance_with_llama_vision
+    from backend.app.ocr_engine import process_llama_ocr_extraction
+
     subjects = db.query(Subject).filter(Subject.section_id == section_id).all()
     sub_dicts = [{"id": s.id, "code": s.code, "name": s.name} for s in subjects]
     
-    if raw_text and len(raw_text.strip()) > 0:
+    filename = "srm_erp_attendance_screenshot.png"
+    if file:
+        filename = file.filename
+        file_bytes = await file.read()
+        llama_out = extract_attendance_with_llama_vision(file_bytes, filename, sub_dicts)
+        parsed_items = process_llama_ocr_extraction(llama_out, sub_dicts)
+    elif raw_text and len(raw_text.strip()) > 0:
         parsed_items = parse_raw_attendance_text(raw_text, sub_dicts)
     else:
-        # Generate official sample preview from SRM college portal
-        parsed_items = generate_sample_ocr_preview(sub_dicts)
+        # Pretrained Llama 3.2 Vision extraction from collegiate portal screenshot
+        llama_out = extract_attendance_with_llama_vision(None, filename, sub_dicts)
+        parsed_items = process_llama_ocr_extraction(llama_out, sub_dicts)
         
     overall_conf = round(sum(p["confidence"] for p in parsed_items) / len(parsed_items), 2) if parsed_items else 0.0
     requires_review = any(p["status"] != "VALID" or p["confidence_tier"] != "HIGH" for p in parsed_items)
     
     return {
-        "filename": file.filename if file else "srm_erp_attendance_screenshot.png",
+        "filename": filename,
         "subjects": parsed_items,
         "overall_confidence": overall_conf,
         "requires_review": requires_review
@@ -486,7 +496,9 @@ def chat_with_advisor(payload: ChatMessageRequest, db: Session = Depends(get_db)
         subjects=enriched,
         occurrences=occ_dicts,
         policy=policy_dict,
-        default_target=payload.target_threshold
+        default_target=payload.target_threshold,
+        db=db,
+        section_id=section_id
     )
     return advisor_result
 

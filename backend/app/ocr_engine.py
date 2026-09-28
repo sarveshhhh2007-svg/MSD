@@ -170,23 +170,93 @@ def parse_raw_attendance_text(text: str, available_subjects: List[Dict[str, Any]
     return results
 
 
+def process_llama_ocr_extraction(
+    llama_output: Dict[str, Any],
+    available_subjects: List[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
+    """
+    Section 14-20: Validates and matches structured Llama 3.2 Vision extraction output.
+    Rules:
+    - attended >= 0, conducted >= 0
+    - attended <= conducted
+    - subject matching strictly against authenticated user's section subjects
+    - confidence tiering: HIGH (>=90%), MEDIUM (70-89%), LOW (<70%)
+    - duplicate detection
+    """
+    results = []
+    seen_subjects = set()
+    raw_subjects_list = llama_output.get("subjects", [])
+
+    for item in raw_subjects_list:
+        raw_sub = item.get("raw_subject", "").strip()
+        code_hint = item.get("subject_code", "")
+        attended = int(item.get("attended", 0))
+        conducted = int(item.get("conducted", 0))
+        model_conf = float(item.get("confidence", 0.90))
+
+        # Subject matching
+        search_term = f"{code_hint} {raw_sub}".strip() if code_hint else raw_sub
+        matched_sub, match_conf, match_type = match_subject(search_term, available_subjects)
+
+        # Combine Llama extraction confidence with deterministic matching confidence
+        combined_conf = round(min(model_conf, match_conf if match_conf < 0.90 else model_conf), 2)
+
+        # Validation rules
+        validation_error = None
+        status = "VALID"
+
+        if attended < 0 or conducted < 0:
+            validation_error = "Attended or conducted count is negative."
+            status = "INVALID"
+            combined_conf = 0.1
+        elif attended > conducted:
+            validation_error = f"Attended ({attended}) exceeds conducted ({conducted}). Mathematically impossible."
+            status = "INVALID"
+            combined_conf = 0.1
+        elif not matched_sub:
+            validation_error = f"Subject '{raw_sub}' is not part of your registered section. Please verify."
+            status = "REVIEW_REQUIRED"
+            combined_conf = min(combined_conf, 0.65)
+        elif matched_sub["code"] in seen_subjects:
+            validation_error = f"Duplicate subject detected for course '{matched_sub['code']}'."
+            status = "REVIEW_REQUIRED"
+            combined_conf = min(combined_conf, 0.70)
+        else:
+            seen_subjects.add(matched_sub["code"])
+
+        # Confidence Tier (Section 18)
+        if combined_conf >= 0.90:
+            conf_tier = "HIGH"
+        elif combined_conf >= 0.70:
+            conf_tier = "MEDIUM"
+            if status == "VALID":
+                status = "REVIEW_REQUIRED"
+        else:
+            conf_tier = "LOW"
+            status = "REVIEW_REQUIRED" if status != "INVALID" else "INVALID"
+
+        results.append({
+            "raw_subject": raw_sub,
+            "matched_subject_id": matched_sub["id"] if matched_sub else None,
+            "matched_subject_code": matched_sub["code"] if matched_sub else code_hint,
+            "matched_subject_name": matched_sub["name"] if matched_sub else None,
+            "attended": attended,
+            "conducted": conducted,
+            "confidence": combined_conf,
+            "confidence_tier": conf_tier,
+            "status": status,
+            "validation_error": validation_error
+        })
+
+    return results
+
+
 def generate_sample_ocr_preview(available_subjects: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Generates structured review table for the college portal screenshot
-    matching the demo flow in Section 25:
-    - DBMS / COA: 34 / 40 -> 98% High
-    - DLD: 29 / 40 -> 76% Review (ambiguous abbreviation)
-    - Maths: 42 / 45 -> 95% High
-    - Solid State: 32 / 40 -> 94% High
+    Generates structured review table from Llama Vision extractor
+    for the college portal screenshot, matching Section 14-20.
     """
-    sample_text = """
-    21CSS201T Computer Organization and Architecture 34 / 40
-    DLD 29 / 40
-    Maths 42 / 45
-    Solid State Devices 32 / 40
-    21ECC205T Electromagnetic Theory 33 / 40
-    Professional Ethics 12 / 14
-    Universal Human Values-II 28 / 30
-    21ECC211L Devices and Digital IC Laboratory 16 / 18
-    """
-    return parse_raw_attendance_text(sample_text, available_subjects)
+    from backend.app.llama_ocr import extract_attendance_with_llama_vision
+    llama_res = extract_attendance_with_llama_vision(None, "srm_erp_attendance_screenshot.png", available_subjects)
+    return process_llama_ocr_extraction(llama_res, available_subjects)
+
