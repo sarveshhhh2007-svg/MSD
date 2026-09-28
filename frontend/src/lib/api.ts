@@ -91,7 +91,7 @@ export interface DashboardSummary {
   };
 }
 
-import { MOCK_SECTIONS, getMockDashboard, getMockFloorGrid, getMockTimetable, getMockLeaveSimulation, getMockPolicy } from "./mockData";
+import { MOCK_SECTIONS, getMockDashboard, getMockFloorGrid, getMockTimetable, getMockLeaveSimulation, getMockPolicy, getMockAnalytics, getMockOccurrences } from "./mockData";
 
 export async function fetchSections(): Promise<SectionData[]> {
   try {
@@ -136,18 +136,26 @@ export async function fetchTimetable(sectionId: number = 1) {
 }
 
 export async function fetchOccurrences(sectionId: number = 1, startDate?: string, endDate?: string) {
-  let url = `${API_BASE}/occurrences?section_id=${sectionId}`;
-  if (startDate) url += `&start_date=${startDate}`;
-  if (endDate) url += `&end_date=${endDate}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch occurrences");
-  return res.json();
+  try {
+    let url = `${API_BASE}/occurrences?section_id=${sectionId}`;
+    if (startDate) url += `&start_date=${startDate}`;
+    if (endDate) url += `&end_date=${endDate}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch occurrences");
+    return await res.json();
+  } catch (err) {
+    return getMockOccurrences(sectionId);
+  }
 }
 
 export async function fetchAnalytics(sectionId: number = 1, target: number = 0.75) {
-  const res = await fetch(`${API_BASE}/analytics/${sectionId}?target=${target}`);
-  if (!res.ok) throw new Error("Failed to fetch analytics");
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/analytics/${sectionId}?target=${target}`);
+    if (!res.ok) throw new Error("Failed to fetch analytics");
+    return await res.json();
+  } catch (err) {
+    return getMockAnalytics(sectionId, target);
+  }
 }
 
 export async function parseAttendanceScreenshot(rawText?: string, file?: File, sectionId: number = 1) {

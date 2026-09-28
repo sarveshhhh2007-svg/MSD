@@ -479,7 +479,7 @@ export default function Campus3DView({
           >
             All Floors (0–6)
           </button>
-          {[0, 1, 2, 3, 4, 5, 6].map((fl) => (
+          {[2, 4, 5, 6, 7].map((fl) => (
             <button
               key={fl}
               onClick={() => setSelectedFloor(fl)}

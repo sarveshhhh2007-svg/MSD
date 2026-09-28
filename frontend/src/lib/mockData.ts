@@ -398,4 +398,43 @@ export function getMockLeaveSimulation(payload: any, sectionId: number = 1) {
   };
 }
 
+export function getMockAnalytics(sectionId: number = 1, target: number = 0.75) {
+  const targetPct = Math.round(target * 100);
+  return {
+    comparison: [
+      { name: "21ECC101J", fullName: "Digital Logic Design", current: 85.0, target: targetPct, maxPossible: 90.0, safeAbsences: 4, status: "SAFE" },
+      { name: "21ECC102J", fullName: "Electronic Circuits", current: 73.7, target: targetPct, maxPossible: 83.3, safeAbsences: 0, status: "WATCH" },
+      { name: "21MAB102T", fullName: "Transforms & PDE", current: 92.5, target: targetPct, maxPossible: 95.0, safeAbsences: 7, status: "SAFE" },
+      { name: "21ECC103J", fullName: "Electromagnetic Fields", current: 60.0, target: targetPct, maxPossible: 72.0, safeAbsences: 0, status: "CRITICAL" },
+      { name: "21CSS101J", fullName: "Object Oriented C++", current: 90.9, target: targetPct, maxPossible: 94.0, safeAbsences: 5, status: "SAFE" }
+    ],
+    trend: [
+      { week: "Week 1", attendance: 88.0, target: targetPct },
+      { week: "Week 2", attendance: 86.5, target: targetPct },
+      { week: "Week 3", attendance: 83.2, target: targetPct },
+      { week: "Week 4", attendance: 84.0, target: targetPct },
+      { week: "Week 5", attendance: 82.5, target: targetPct },
+      { week: "Week 6 (Current)", attendance: 84.7, target: targetPct }
+    ],
+    distribution: [
+      { name: "Safe", value: 3, color: "#35D07F" },
+      { name: "Watch", value: 1, color: "#F5B942" },
+      { name: "Critical", value: 1, color: "#FF5C68" },
+      { name: "Irreversible", value: 0, color: "#8B0000" }
+    ]
+  };
+}
+
+export function getMockOccurrences(sectionId: number = 1) {
+  return [
+    { id: 101, section_id: sectionId, subject_id: 1, subject_name: "Digital Logic Design", subject_code: "21ECC101J", occurrence_date: "2026-09-28", slot: "1", start_time: "08:00", end_time: "08:50", venue: "IST 602", attendance_status: "PRESENT" },
+    { id: 102, section_id: sectionId, subject_id: 3, subject_name: "Transforms & PDE", subject_code: "21MAB102T", occurrence_date: "2026-09-28", slot: "2", start_time: "08:50", end_time: "09:40", venue: "IST 602", attendance_status: "PRESENT" },
+    { id: 103, section_id: sectionId, subject_id: 2, subject_name: "Electronic Circuits", subject_code: "21ECC102J", occurrence_date: "2026-09-28", slot: "3", start_time: "09:50", end_time: "10:40", venue: "IST 411", attendance_status: "PENDING" },
+    { id: 104, section_id: sectionId, subject_id: 5, subject_name: "Object Oriented C++", subject_code: "21CSS101J", occurrence_date: "2026-09-28", slot: "4", start_time: "10:40", end_time: "11:30", venue: "IST 710", attendance_status: "PENDING" },
+    { id: 105, section_id: sectionId, subject_id: 4, subject_name: "Electromagnetic Fields", subject_code: "21ECC103J", occurrence_date: "2026-09-29", slot: "1", start_time: "08:00", end_time: "08:50", venue: "IST 502", attendance_status: "PENDING" },
+    { id: 106, section_id: sectionId, subject_id: 1, subject_name: "Digital Logic Lab", subject_code: "21ECC101J", occurrence_date: "2026-09-29", slot: "2", start_time: "08:50", end_time: "09:40", venue: "IST 411", attendance_status: "PENDING" }
+  ];
+}
+
+
 
