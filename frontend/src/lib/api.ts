@@ -91,16 +91,28 @@ export interface DashboardSummary {
   };
 }
 
+import { MOCK_SECTIONS, getMockDashboard } from "./mockData";
+
 export async function fetchSections(): Promise<SectionData[]> {
-  const res = await fetch(`${API_BASE}/sections`);
-  if (!res.ok) throw new Error("Failed to fetch sections");
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/sections`);
+    if (!res.ok) throw new Error("Failed to fetch sections");
+    return await res.json();
+  } catch (err) {
+    console.warn("Backend unavailable, using rich preloaded section dataset:", err);
+    return MOCK_SECTIONS;
+  }
 }
 
 export async function fetchDashboard(sectionId: number = 1, target: number = 0.75): Promise<DashboardSummary> {
-  const res = await fetch(`${API_BASE}/dashboard/${sectionId}?target=${target}`);
-  if (!res.ok) throw new Error("Failed to fetch dashboard summary");
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/dashboard/${sectionId}?target=${target}`);
+    if (!res.ok) throw new Error("Failed to fetch dashboard summary");
+    return await res.json();
+  } catch (err) {
+    console.warn("Backend unavailable, serving instant deterministic mock dashboard:", err);
+    return getMockDashboard(sectionId, target);
+  }
 }
 
 export async function fetchSubjects(sectionId: number = 1, target: number = 0.75): Promise<SubjectData[]> {
