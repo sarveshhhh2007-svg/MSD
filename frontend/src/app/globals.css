@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+:root {
+  --bg-app: #080B14;
+  --surface-main: #0F1422;
+  --surface-elevated: #151B2B;
+  --border-slate: #252D42;
+  --brand-violet: #7C5CFF;
+  --brand-violet-hover: #9278FF;
+  --text-primary: #F5F3EA;
+  --text-secondary: #A7AEC2;
+  --text-muted: #70788F;
+  --safe-green: #35D07F;
+  --caution-amber: #F5B942;
+  --critical-red: #FF5C68;
+  --od-cyan: #38BDF8;
+  --ai-violet: #A78BFA;
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #080B14;
+}
+::-webkit-scrollbar-thumb {
+  background: #252D42;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3B4564;
+}
+
+/* Subtle Card Glow */
+.card-subtle {
+  background-color: var(--surface-main);
+  border: 1px solid var(--border-slate);
+  border-radius: 10px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.card-subtle:hover {
+  border-color: #384566;
+}
+
+.card-elevated {
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--border-slate);
+  border-radius: 10px;
+}
+
+/* Status Badges */
+.badge-safe {
+  background-color: rgba(53, 208, 127, 0.1);
+  color: #35D07F;
+  border: 1px solid rgba(53, 208, 127, 0.25);
+}
+
+.badge-caution {
+  background-color: rgba(245, 185, 66, 0.1);
+  color: #F5B942;
+  border: 1px solid rgba(245, 185, 66, 0.25);
+}
+
+.badge-critical {
+  background-color: rgba(255, 92, 104, 0.1);
+  color: #FF5C68;
+  border: 1px solid rgba(255, 92, 104, 0.25);
+}
+
+.badge-od {
+  background-color: rgba(56, 189, 248, 0.1);
+  color: #38BDF8;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.badge-ai {
+  background-color: rgba(167, 139, 250, 0.1);
+  color: #A78BFA;
+  border: 1px solid rgba(167, 139, 250, 0.25);
+}
