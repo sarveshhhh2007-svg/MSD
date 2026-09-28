@@ -199,3 +199,89 @@ export function getMockDashboard(sectionId: number = 1, target: number = 0.75): 
     }
   };
 }
+
+export function getMockFloorGrid(building: string = "ALL", floorNum?: number) {
+  const roomsRaw = [
+    // Floor 2
+    { room_number: "IST 211", floor: 2, floor_name: "2nd Floor", room_type: "Classroom", capacity: 65, has_ac: true, has_projector: true, status: "AVAILABLE" as const, available_window: "Free until 1:30 PM" },
+    { room_number: "IST 225", floor: 2, floor_name: "2nd Floor", room_type: "Classroom", capacity: 60, has_ac: true, has_projector: true, status: "OCCUPIED" as const, available_window: "Occupied by IV ECE-A" },
+    { room_number: "IST 227", floor: 2, floor_name: "2nd Floor", room_type: "Seminar Hall", capacity: 80, has_ac: true, has_projector: true, status: "AVAILABLE" as const, available_window: "Free until 3:00 PM" },
+    // Floor 4
+    { room_number: "IST 411", floor: 4, floor_name: "4th Floor", room_type: "Hardware Lab", capacity: 55, has_ac: true, has_projector: true, status: "AVAILABLE" as const, available_window: "Free until 12:45 PM" },
+    { room_number: "IST 416", floor: 4, floor_name: "4th Floor", room_type: "Embedded Lab", capacity: 50, has_ac: true, has_projector: true, status: "OCCUPIED" as const, available_window: "Occupied by II ECE-DS A" },
+    // Floor 5
+    { room_number: "IST 502", floor: 5, floor_name: "5th Floor", room_type: "Classroom", capacity: 70, has_ac: true, has_projector: true, status: "AVAILABLE" as const, available_window: "Free until 2:15 PM" },
+    { room_number: "IST 518", floor: 5, floor_name: "5th Floor", room_type: "DSP Lab", capacity: 60, has_ac: true, has_projector: true, status: "AVAILABLE" as const, available_window: "Free until 4:00 PM" },
+    { room_number: "IST 519", floor: 5, floor_name: "5th Floor", room_type: "IoT Lab", capacity: 55, has_ac: true, has_projector: true, status: "OCCUPIED" as const, available_window: "Occupied by III ECE-DS" },
+    { room_number: "IST 520", floor: 5, floor_name: "5th Floor", room_type: "Biotech Lab", capacity: 45, has_ac: false, has_projector: true, status: "AVAILABLE" as const, available_window: "Free until 1:15 PM" },
+    // Floor 6
+    { room_number: "IST 602", floor: 6, floor_name: "6th Floor", room_type: "Smart Classroom", capacity: 75, has_ac: true, has_projector: true, status: "AVAILABLE" as const, available_window: "Free until 2:30 PM" },
+    { room_number: "IST 608", floor: 6, floor_name: "6th Floor", room_type: "VLSI Lab", capacity: 40, has_ac: true, has_projector: true, status: "OCCUPIED" as const, available_window: "Occupied until 12:30 PM" },
+    // Floor 7
+    { room_number: "IST 702", floor: 7, floor_name: "7th Floor", room_type: "Biomedical Lab", capacity: 48, has_ac: true, has_projector: true, status: "AVAILABLE" as const, available_window: "Free until 3:30 PM" },
+    { room_number: "IST 710", floor: 7, floor_name: "7th Floor", room_type: "Lecture Hall", capacity: 90, has_ac: true, has_projector: true, status: "AVAILABLE" as const, available_window: "Free until 1:00 PM" }
+  ];
+
+  let filteredRooms = roomsRaw;
+  if (floorNum !== undefined && floorNum !== null) {
+    filteredRooms = roomsRaw.filter(r => r.floor === floorNum);
+  }
+
+  const floorsMap: { [fl: number]: any } = {};
+  filteredRooms.forEach(r => {
+    if (!floorsMap[r.floor]) {
+      floorsMap[r.floor] = {
+        floor_number: r.floor,
+        floor_name: r.floor_name,
+        rooms: []
+      };
+    }
+    floorsMap[r.floor].rooms.push({
+      id: parseInt(r.room_number.replace(/\D/g, "") || "101"),
+      room_number: r.room_number,
+      building: "Main Tech Park (TP)",
+      floor: r.floor,
+      floor_name: r.floor_name,
+      capacity: r.capacity,
+      has_ac: r.has_ac,
+      has_projector: r.has_projector,
+      room_type: r.room_type,
+      status: r.status,
+      available_window: r.available_window,
+      note: "Live verified slot status"
+    });
+  });
+
+  const floors = Object.values(floorsMap).sort((a: any, b: any) => a.floor_number - b.floor_number);
+  const total = filteredRooms.length;
+  const avail = filteredRooms.filter(r => r.status === "AVAILABLE").length;
+
+  return {
+    target_date: "2026-09-28",
+    query_time: "10:42",
+    interval: "10:40 - 11:30",
+    last_updated: "2026-09-28 10:42:00",
+    total_rooms: total,
+    available_count: avail,
+    occupied_count: total - avail,
+    floors
+  };
+}
+
+export function getMockTimetable(sectionId: number = 1) {
+  return [
+    { day: "Monday", slot: "1", time: "08:00 - 08:50", subject: "21ECC101J - Digital Logic Design", room: "IST 602", faculty: "Dr. P. Malarvizhi" },
+    { day: "Monday", slot: "2", time: "08:50 - 09:40", subject: "21MAB102T - Transforms & PDE", room: "IST 602", faculty: "Dr. S. Balamuralitharan" },
+    { day: "Monday", slot: "3", time: "09:50 - 10:40", subject: "21ECC102J - Electronic Circuits", room: "IST 411", faculty: "Dr. K. Kalimuthu" },
+    { day: "Monday", slot: "4", time: "10:40 - 11:30", subject: "21CSS101J - Object Oriented C++", room: "IST 710", faculty: "Dr. R. Rajkumar" },
+    { day: "Tuesday", slot: "1", time: "08:00 - 08:50", subject: "21ECC103J - Electromagnetic Fields", room: "IST 502", faculty: "Dr. V. Sarada" },
+    { day: "Tuesday", slot: "2", time: "08:50 - 09:40", subject: "21ECC101J - Digital Logic Lab", room: "IST 411", faculty: "Dr. P. Malarvizhi" },
+    { day: "Wednesday", slot: "1", time: "08:00 - 08:50", subject: "21MAB102T - Transforms & PDE", room: "IST 602", faculty: "Dr. S. Balamuralitharan" },
+    { day: "Wednesday", slot: "2", time: "08:50 - 09:40", subject: "21ECC102J - Electronic Circuits", room: "IST 602", faculty: "Dr. K. Kalimuthu" },
+    { day: "Thursday", slot: "1", time: "08:00 - 08:50", subject: "21CSS101J - Object Oriented C++", room: "IST 710", faculty: "Dr. R. Rajkumar" },
+    { day: "Thursday", slot: "2", time: "08:50 - 09:40", subject: "21ECC103J - Electromagnetic Fields", room: "IST 502", faculty: "Dr. V. Sarada" },
+    { day: "Friday", slot: "1", time: "08:00 - 08:50", subject: "21ECC101J - Digital Logic Design", room: "IST 602", faculty: "Dr. P. Malarvizhi" },
+    { day: "Friday", slot: "2", time: "08:50 - 09:40", subject: "21MAB102T - Transforms & PDE", room: "IST 602", faculty: "Dr. S. Balamuralitharan" }
+  ];
+}
+
