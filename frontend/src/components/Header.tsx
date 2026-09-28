@@ -8,9 +8,15 @@ import {
   Clock,
   Bell,
   Search,
-  CheckCircle2
+  CheckCircle2,
+  SlidersHorizontal,
+  User,
+  LogOut,
+  Sun,
+  Moon
 } from "lucide-react";
 import { SectionData } from "../lib/api";
+import { DemoUser } from "../lib/auth";
 
 interface HeaderProps {
   sections: SectionData[];
@@ -21,6 +27,10 @@ interface HeaderProps {
   onOpenUpload: () => void;
   onOpenAdvisor: () => void;
   criticalCount?: number;
+  theme?: "light" | "dark";
+  onToggleTheme?: (theme: "light" | "dark") => void;
+  currentUser?: DemoUser | null;
+  onLogout?: () => void;
 }
 
 export default function Header({
@@ -31,9 +41,14 @@ export default function Header({
   setSelectedTarget,
   onOpenUpload,
   onOpenAdvisor,
-  criticalCount = 0
+  criticalCount = 0,
+  theme = "light",
+  onToggleTheme,
+  currentUser,
+  onLogout,
 }: HeaderProps) {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchVal, setSearchVal] = useState("");
+  const [profileOpen, setProfileOpen] = useState(false);
   const currentSection = sections.find((s) => s.id === selectedSectionId) || sections[0];
 
   const targetOptions = [
@@ -43,106 +58,170 @@ export default function Header({
   ];
 
   return (
-    <header className="h-16 px-6 bg-[#0F1422] border-b border-[#252D42] flex items-center justify-between shrink-0 gap-4">
-      {/* Left: Greeting & Current Status */}
-      <div className="flex items-center gap-4 shrink-0">
-        <div>
-          <h1 className="text-sm font-semibold text-[#F5F3EA] tracking-tight flex items-center gap-2">
-            <span>Good morning, Sarvesh</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#35D07F]" />
-          </h1>
-          <p className="text-[11px] text-[#70788F] flex items-center gap-1.5 mt-0.5">
-            <span>Attendance Intelligence Active</span>
-            <span className="text-[#252D42]">•</span>
-            <Clock className="w-3 h-3 text-[#70788F]" />
-            <span>Updated Today</span>
-          </p>
-        </div>
-
-        {/* Section Selector */}
+    <header className="h-20 px-8 bg-[#F7F4E8] dark:bg-[#080B14] flex items-center justify-between shrink-0 gap-4 z-10 transition-colors duration-200 border-b border-[#E8E3D7]/60 dark:border-[#252D42]">
+      {/* Left: Section Switcher & Status Capsule */}
+      <div className="flex items-center gap-3">
         <div className="relative">
           <select
             value={selectedSectionId}
             onChange={(e) => setSelectedSectionId(Number(e.target.value))}
-            className="appearance-none bg-[#151B2B] text-xs font-semibold text-[#F5F3EA] border border-[#252D42] rounded-lg pl-3 pr-8 py-1.5 hover:border-[#7C5CFF]/50 transition-colors focus:outline-none focus:border-[#7C5CFF]"
+            className="appearance-none bg-[#FFFDF8] dark:bg-[#0F1422] text-xs font-bold text-[#171717] dark:text-[#F5F3EA] border border-[#E8E3D7] dark:border-[#252D42] rounded-full pl-4 pr-9 py-2 hover:border-[#FFD81A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FFD81A]/40 shadow-sm cursor-pointer"
           >
             {sections.map((s) => (
-              <option key={s.id} value={s.id} className="bg-[#0F1422] text-[#F5F3EA]">
+              <option key={s.id} value={s.id}>
                 {s.name} ({s.venue})
               </option>
             ))}
           </select>
-          <ChevronDown className="w-3.5 h-3.5 text-[#70788F] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <ChevronDown className="w-3.5 h-3.5 text-[#7A7A7A] dark:text-[#70788F] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        </div>
+
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFFDF8] dark:bg-[#0F1422] border border-[#E8E3D7] dark:border-[#252D42] text-xs font-semibold text-[#171717] dark:text-[#F5F3EA] shadow-sm">
+          <span className="w-2 h-2 rounded-full bg-[#45B36B] dark:bg-[#35D07F] animate-pulse" />
+          <span>Real-time Active</span>
         </div>
       </div>
 
-      {/* Middle: Prominent Search Bar (from reference prompt) */}
+      {/* Middle: Floating Rounded Search Input */}
       <div className="max-w-md w-full hidden md:block">
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-[#70788F] absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#7A7A7A] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search subjects, rooms, faculty, or attendance records..."
-            className="w-full bg-[#151B2B] text-xs text-[#F5F3EA] placeholder-[#70788F] border border-[#252D42] rounded-lg pl-8 pr-4 py-1.5 focus:border-[#7C5CFF] focus:outline-none focus:ring-1 focus:ring-[#7C5CFF]/30 transition-all"
+            value={searchVal}
+            onChange={(e) => setSearchVal(e.target.value)}
+            placeholder="Search subjects, attendance records, classrooms..."
+            className="w-full bg-[#FFFDF8] dark:bg-[#0F1422] text-xs font-medium text-[#171717] dark:text-[#F5F3EA] placeholder-[#7A7A7A] dark:placeholder-[#70788F] border border-[#E8E3D7] dark:border-[#252D42] rounded-full pl-11 pr-4 py-2.5 focus:border-[#FFD81A] dark:focus:border-[#7C5CFF] focus:outline-none focus:ring-2 focus:ring-[#FFD81A]/30 shadow-sm transition-all"
           />
         </div>
       </div>
 
-      {/* Right: Target Selector Tabs & Actions */}
-      <div className="flex items-center gap-3 shrink-0">
+      {/* Right: Target Segmented Pills, Actions & Avatar */}
+      <div className="flex items-center gap-3">
         {/* Target Tabs */}
-        <div className="flex items-center bg-[#080B14] p-1 rounded-lg border border-[#252D42]">
+        <div className="flex items-center bg-[#EFECE0] dark:bg-[#151B2B] p-1 rounded-full border border-[#E8E3D7] dark:border-[#252D42] shadow-inner">
           {targetOptions.map((opt) => {
             const isSelected = selectedTarget === opt.value;
             return (
               <button
                 key={opt.value}
                 onClick={() => setSelectedTarget(opt.value)}
-                className={`px-2.5 py-1 text-xs font-semibold rounded transition-all ${
+                className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${
                   isSelected
-                    ? "bg-[#7C5CFF] text-[#F5F3EA] shadow-sm"
-                    : "text-[#A7AEC2] hover:text-[#F5F3EA]"
+                    ? "bg-[#FFD81A] dark:bg-[#7C5CFF] text-[#171717] dark:text-[#F5F3EA] shadow-sm shadow-[#FFD81A]/30"
+                    : "text-[#7A7A7A] dark:text-[#70788F] hover:text-[#171717] dark:hover:text-[#F5F3EA]"
                 }`}
               >
                 <span>{opt.label}</span>
-                <span className="ml-1 text-[10px] opacity-75 font-mono">({opt.tag})</span>
+                <span className="ml-1 text-[9px] opacity-75 font-normal">({opt.tag})</span>
               </button>
             );
           })}
         </div>
 
-        {/* Upload Screenshot Button */}
+        {/* Import Attendance Screenshot */}
         <button
           onClick={onOpenUpload}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#151B2B] text-[#F5F3EA] border border-[#252D42] hover:border-[#7C5CFF]/50 hover:bg-[#151B2B]/80 transition-all"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-[#FFFDF8] dark:bg-[#0F1422] text-[#171717] dark:text-[#F5F3EA] border border-[#E8E3D7] dark:border-[#252D42] hover:border-[#FFD81A] hover:bg-[#FFF8D6] dark:hover:bg-[#151B2B] transition-all shadow-sm"
         >
-          <Upload className="w-3.5 h-3.5 text-[#7C5CFF]" />
-          <span className="hidden sm:inline">Import</span>
+          <Upload className="w-3.5 h-3.5" />
+          <span className="hidden lg:inline">Import Screenshot</span>
         </button>
 
-        {/* Notifications Icon with Critical Alert Badge */}
+        {/* Notifications Icon with Badge */}
         <div className="relative">
           <button
-            className="p-2 rounded-lg bg-[#151B2B] text-[#A7AEC2] hover:text-[#F5F3EA] border border-[#252D42] hover:border-[#7C5CFF]/50 transition-all"
+            className="p-2.5 rounded-full bg-[#FFFDF8] dark:bg-[#0F1422] text-[#171717] dark:text-[#F5F3EA] border border-[#E8E3D7] dark:border-[#252D42] hover:border-[#FFD81A] transition-all shadow-sm"
             title="Notifications"
           >
-            <Bell className="w-3.5 h-3.5" />
+            <Bell className="w-4 h-4" />
             {criticalCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#FF5C68] animate-pulse" />
+              <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#E74C3C] border-2 border-[#FFFDF8]" />
             )}
           </button>
         </div>
 
-        {/* AI Advisor Button */}
+        {/* Attendance Advisor AI Trigger */}
         <button
           onClick={onOpenAdvisor}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#7C5CFF] hover:bg-[#9278FF] text-[#F5F3EA] shadow-sm transition-all"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-[#7A3DF0] hover:bg-[#6830D4] text-[#FFFDF8] shadow-md shadow-[#7A3DF0]/25 transition-all"
         >
-          <Sparkles className="w-3.5 h-3.5" />
+          <Sparkles className="w-3.5 h-3.5 text-[#FFD81A]" />
           <span>Advisor AI</span>
         </button>
+
+        {/* User Profile Avatar & Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setProfileOpen(!profileOpen)}
+            className="flex items-center gap-2 pl-2 border-l border-[#E8E3D7] dark:border-[#252D42] focus:outline-none"
+          >
+            {currentUser?.avatar ? (
+              <img
+                src={currentUser.avatar}
+                alt={currentUser.name}
+                className="w-9 h-9 rounded-full object-cover border-2 border-[#FFFDF8] dark:border-[#0F1422] shadow-sm"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#FFD81A] to-[#FF8A3D] flex items-center justify-center font-bold text-xs text-[#171717] border-2 border-[#FFFDF8] shadow-sm">
+                S
+              </div>
+            )}
+          </button>
+
+          {profileOpen && (
+            <div className="absolute right-0 top-12 w-64 p-4 rounded-2xl bg-[#FFFDF8] dark:bg-[#0F1422] border border-[#E8E3D7] dark:border-[#252D42] shadow-2xl z-50 space-y-3 animate-in fade-in duration-150">
+              <div className="pb-3 border-b border-[#E8E3D7] dark:border-[#252D42]">
+                <p className="text-xs font-bold text-[#171717] dark:text-[#F5F3EA]">
+                  {currentUser?.name || "Sarvesh Kumar"}
+                </p>
+                <p className="text-[11px] font-mono text-[#7A7A7A] dark:text-[#A7AEC2]">
+                  {currentUser?.studentId || "RA2311004010042"}
+                </p>
+                <p className="text-[10px] text-[#45B36B] dark:text-[#35D07F] font-semibold mt-0.5">
+                  {currentUser?.sectionName || currentSection?.name}
+                </p>
+              </div>
+
+              {/* Theme Switcher in Profile */}
+              {onToggleTheme && (
+                <div className="flex items-center justify-between text-xs py-1">
+                  <span className="text-[#7A7A7A] dark:text-[#A7AEC2] font-medium">Theme Mode</span>
+                  <button
+                    onClick={() => onToggleTheme(theme === "light" ? "dark" : "light")}
+                    className="p-1.5 rounded-lg bg-[#FAFAFC] dark:bg-[#151B2B] text-[#171717] dark:text-[#F5F3EA] border border-[#E8E3D7] dark:border-[#252D42] flex items-center gap-1 text-[11px] font-bold"
+                  >
+                    {theme === "light" ? (
+                      <>
+                        <Moon className="w-3 h-3 text-[#7C5CFF]" />
+                        <span>Night</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sun className="w-3 h-3 text-[#FF8A3D]" />
+                        <span>Ivory</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+
+              {/* Sign Out Action */}
+              {onLogout && (
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    onLogout();
+                  }}
+                  className="w-full py-2 px-3 rounded-xl text-xs font-bold text-[#E74C3C] dark:text-[#FF5C68] hover:bg-[#E74C3C]/10 transition-colors flex items-center gap-2 justify-center"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Log Out of NExtclass</span>
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

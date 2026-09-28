@@ -130,24 +130,24 @@ All calculations are verified by backend rational mathematics, never fabricated 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-xl h-full bg-[#0F1422] border-l border-[#252D42] shadow-2xl flex flex-col justify-between">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="w-full max-w-xl h-full bg-[#FFFDF8] border-l border-[#E8E3D7] shadow-2xl flex flex-col justify-between">
         {/* Header */}
-        <div className="h-16 px-6 border-b border-[#252D42] flex items-center justify-between shrink-0 bg-[#0F1422]">
+        <div className="h-16 px-6 border-b border-[#E8E3D7] flex items-center justify-between shrink-0 bg-[#FFFDF8]">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#A78BFA]/15 border border-[#A78BFA]/30 flex items-center justify-center text-[#A78BFA]">
+            <div className="w-8 h-8 rounded-xl bg-[#7A3DF0]/10 border border-[#7A3DF0]/30 flex items-center justify-center text-[#7A3DF0]">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-sm text-[#F5F3EA]">
+                <span className="font-extrabold text-sm text-[#171717]">
                   Attendance Advisor AI
                 </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#35D07F]/10 text-[#35D07F] border border-[#35D07F]/25 font-mono">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#45B36B]/15 text-[#45B36B] border border-[#45B36B]/30 font-bold font-mono">
                   DETERMINISTIC
                 </span>
               </div>
-              <p className="text-[11px] text-[#70788F]">
+              <p className="text-[11px] text-[#7A7A7A]">
                 Ground-truth mathematics • SRM IST Regulation 2026
               </p>
             </div>
@@ -155,14 +155,14 @@ All calculations are verified by backend rational mathematics, never fabricated 
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#70788F] hover:text-[#F5F3EA] hover:bg-[#151B2B] transition-colors"
+            className="p-1.5 rounded-xl text-[#7A7A7A] hover:text-[#171717] hover:bg-[#FAFAFC] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Message Thread */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+        <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-[#F7F4E8]/40">
           {messages.map((msg) => {
             const isAdvisor = msg.sender === "advisor";
             return (
@@ -171,26 +171,26 @@ All calculations are verified by backend rational mathematics, never fabricated 
                 className={`flex gap-3 ${isAdvisor ? "items-start" : "items-start justify-end"}`}
               >
                 {isAdvisor && (
-                  <div className="w-7 h-7 rounded-lg bg-[#A78BFA]/15 border border-[#A78BFA]/30 flex items-center justify-center text-[#A78BFA] shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-xl bg-[#7A3DF0]/10 border border-[#7A3DF0]/30 flex items-center justify-center text-[#7A3DF0] shrink-0 mt-0.5">
                     <Bot className="w-4 h-4" />
                   </div>
                 )}
 
                 <div
-                  className={`max-w-[85%] rounded-xl p-4 text-xs leading-relaxed space-y-2 ${
+                  className={`max-w-[85%] rounded-[22px] p-4 text-xs leading-relaxed space-y-2 shadow-sm ${
                     isAdvisor
-                      ? "bg-[#151B2B] text-[#F5F3EA] border border-[#252D42]"
-                      : "bg-[#7C5CFF] text-[#F5F3EA] ml-auto shadow-md"
+                      ? "bg-[#FFFDF8] text-[#171717] border border-[#E8E3D7]"
+                      : "bg-[#FFD81A] text-[#171717] font-medium ml-auto"
                   }`}
                 >
-                  {/* Tool Call Trace (Section 39) */}
+                  {/* Tool Call Trace */}
                   {msg.toolCalls && msg.toolCalls.length > 0 && (
-                    <div className="mb-2 pb-2 border-b border-[#252D42]">
+                    <div className="mb-2 pb-2 border-b border-[#E8E3D7]">
                       <button
                         onClick={() =>
                           setShowTools((prev) => ({ ...prev, [msg.id]: !prev[msg.id] }))
                         }
-                        className="flex items-center gap-1.5 text-[10px] font-mono text-[#A78BFA] hover:underline"
+                        className="flex items-center gap-1.5 text-[10px] font-mono text-[#7A3DF0] hover:underline font-bold"
                       >
                         <Terminal className="w-3 h-3" />
                         <span>
@@ -204,11 +204,11 @@ All calculations are verified by backend rational mathematics, never fabricated 
                       </button>
 
                       {showTools[msg.id] && (
-                        <div className="mt-2 p-2 rounded bg-[#080B14] border border-[#252D42] text-[10px] font-mono text-[#A7AEC2] space-y-1">
+                        <div className="mt-2 p-3 rounded-xl bg-[#FAFAFC] border border-[#E8E3D7] text-[10px] font-mono text-[#171717] space-y-1.5">
                           {msg.toolCalls.map((tc, tidx) => (
                             <div key={tidx}>
-                              <span className="text-[#35D07F] font-bold">{tc.tool_name}</span>
-                              <pre className="text-[#70788F] overflow-x-auto">
+                              <span className="text-[#45B36B] font-bold">{tc.tool_name}</span>
+                              <pre className="text-[#7A7A7A] overflow-x-auto text-[10px] mt-0.5">
                                 {JSON.stringify(tc.input_args)}
                               </pre>
                             </div>
@@ -220,12 +220,12 @@ All calculations are verified by backend rational mathematics, never fabricated 
 
                   {/* Message Markdown Content */}
                   <div
-                    className="prose prose-invert prose-xs max-w-none text-[#F5F3EA] space-y-1.5"
+                    className="prose prose-xs max-w-none text-[#171717] space-y-1.5"
                     dangerouslySetInnerHTML={{
                       __html: msg.text
-                        .replace(/### (.*)/g, "<h4 class='text-sm font-bold text-[#F5F3EA] mt-1 mb-1'>$1</h4>")
-                        .replace(/\*\*(.*?)\*\*/g, "<strong class='font-bold text-[#F5F3EA]'>$1</strong>")
-                        .replace(/\*(.*?)\*/g, "<em class='text-[#A7AEC2]'>$1</em>")
+                        .replace(/### (.*)/g, "<h4 class='text-sm font-extrabold text-[#171717] mt-1 mb-1'>$1</h4>")
+                        .replace(/\*\*(.*?)\*\*/g, "<strong class='font-bold text-[#171717]'>$1</strong>")
+                        .replace(/\*(.*?)\*/g, "<em class='text-[#7A7A7A]'>$1</em>")
                         .replace(/\n\n/g, "<br/>")
                         .replace(/\n/g, "<br/>"),
                     }}
@@ -233,7 +233,7 @@ All calculations are verified by backend rational mathematics, never fabricated 
                 </div>
 
                 {!isAdvisor && (
-                  <div className="w-7 h-7 rounded-lg bg-[#7C5CFF]/20 border border-[#7C5CFF]/40 flex items-center justify-center text-[#9278FF] shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-xl bg-[#171717] flex items-center justify-center text-white shrink-0 mt-0.5 shadow-sm">
                     <User className="w-4 h-4" />
                   </div>
                 )}
@@ -241,14 +241,19 @@ All calculations are verified by backend rational mathematics, never fabricated 
             );
           })}
 
+          {/* Typing Indicator */}
           {loading && (
             <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-lg bg-[#A78BFA]/15 border border-[#A78BFA]/30 flex items-center justify-center text-[#A78BFA] shrink-0">
+              <div className="w-7 h-7 rounded-xl bg-[#7A3DF0]/10 border border-[#7A3DF0]/30 flex items-center justify-center text-[#7A3DF0] shrink-0">
                 <Bot className="w-4 h-4" />
               </div>
-              <div className="p-3.5 rounded-xl bg-[#151B2B] border border-[#252D42] flex items-center gap-2 text-xs text-[#A7AEC2]">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#A78BFA]" />
-                <span>Running deterministic timetable evaluation...</span>
+              <div className="p-3.5 rounded-[20px] bg-[#FFFDF8] border border-[#E8E3D7] flex items-center gap-3 text-xs text-[#7A7A7A] shadow-sm">
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-[#7A3DF0] animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-2 h-2 rounded-full bg-[#7A3DF0] animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-2 h-2 rounded-full bg-[#7A3DF0] animate-bounce" style={{ animationDelay: "300ms" }} />
+                </span>
+                <span className="font-medium text-[#171717]">Calculating with deterministic engine...</span>
               </div>
             </div>
           )}
@@ -257,14 +262,14 @@ All calculations are verified by backend rational mathematics, never fabricated 
         </div>
 
         {/* Prompt Suggestions & Input */}
-        <div className="p-4 border-t border-[#252D42] bg-[#0F1422] space-y-3 shrink-0">
+        <div className="p-4 border-t border-[#E8E3D7] bg-[#FFFDF8] space-y-3 shrink-0">
           {/* Prompt Chips */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
             {promptChips.map((chip, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSend(chip)}
-                className="px-2.5 py-1 rounded-full text-[11px] bg-[#151B2B] hover:bg-[#151B2B]/80 text-[#A7AEC2] hover:text-[#F5F3EA] border border-[#252D42] shrink-0 transition-colors"
+                className="px-3 py-1.5 rounded-full text-[11px] font-medium bg-[#FAFAFC] hover:bg-[#F7F4E8] text-[#171717] border border-[#E8E3D7] hover:border-[#171717] shrink-0 transition-all shadow-sm"
               >
                 {chip.slice(0, 38)}...
               </button>
@@ -283,13 +288,13 @@ All calculations are verified by backend rational mathematics, never fabricated 
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask attendance question (e.g. 'How many classes can I miss in Maths?')..."
-              className="flex-1 bg-[#151B2B] text-xs text-[#F5F3EA] placeholder-[#70788F] border border-[#252D42] rounded-lg px-3.5 py-2.5 focus:border-[#7C5CFF] focus:outline-none"
+              placeholder="Ask attendance question (e.g. 'Can I miss tomorrow's DBMS?')..."
+              className="flex-1 bg-[#FAFAFC] text-xs text-[#171717] placeholder-[#7A7A7A] font-medium border border-[#E8E3D7] rounded-2xl px-4 py-3 focus:border-[#FFD81A] focus:outline-none focus:ring-2 focus:ring-[#FFD81A]/40 transition-all shadow-sm"
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="p-2.5 rounded-lg bg-[#7C5CFF] hover:bg-[#9278FF] disabled:opacity-40 text-[#F5F3EA] transition-all shrink-0"
+              className="p-3 rounded-2xl bg-[#FFD81A] hover:bg-[#FACC15] disabled:opacity-40 text-[#171717] transition-all shrink-0 active:scale-95 shadow-sm font-bold"
             >
               <Send className="w-4 h-4" />
             </button>

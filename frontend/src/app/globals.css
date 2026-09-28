@@ -1,91 +1,175 @@
 @import "tailwindcss";
 
 :root {
-  --background: #080B14;
-  --surface: #0F1422;
-  --surface-elevated: #151B2B;
-  --border: #252D42;
+  --bg-main: #F7F4E8;
+  --bg-sidebar: #FAFAFC;
+  --surface-card: #FFFDF8;
+  --surface-card-hover: #FFFFFF;
+  --border-subtle: #E8E3D7;
+  --border-strong: #D5CFBE;
 
-  --primary: #7C5CFF;
-  --primary-hover: #9278FF;
+  --text-primary: #171717;
+  --text-secondary: #7A7A7A;
+  --text-muted: #9E9E9E;
+
+  --accent-gold: #FFD81A;
+  --accent-gold-hover: #F2CC13;
+  --accent-gold-light: #FFF8D6;
+
+  --success-green: #45B36B;
+  --warning-orange: #FF8A3D;
+  --critical-red: #E74C3C;
+
+  --ai-purple: #7A3DF0;
+  --info-blue: #4C6EF5;
+}
+
+.dark {
+  --bg-main: #080B14;
+  --bg-sidebar: #0F1422;
+  --surface-card: #0F1422;
+  --surface-card-hover: #151B2B;
+  --border-subtle: #252D42;
+  --border-strong: #384566;
 
   --text-primary: #F5F3EA;
   --text-secondary: #A7AEC2;
   --text-muted: #70788F;
 
-  --safe: #35D07F;
-  --caution: #F5B942;
-  --critical: #FF5C68;
+  --accent-gold: #FFD81A;
+  --accent-gold-hover: #F2CC13;
+  --accent-gold-light: rgba(255, 216, 26, 0.15);
 
-  --od-medical: #38BDF8;
-  --ai: #A78BFA;
+  --success-green: #35D07F;
+  --warning-orange: #F5B942;
+  --critical-red: #FF5C68;
+
+  --ai-purple: #A78BFA;
+  --info-blue: #38BDF8;
 }
 
+/* Light / Dark Base */
 html, body {
-  background-color: #080B14 !important;
-  color: #F5F3EA !important;
-  color-scheme: dark;
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  letter-spacing: -0.01em;
+  background-color: var(--bg-main) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-jakarta), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.015em;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Custom Scrollbars */
+/* Subtle Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #080B14;
+  background: var(--bg-main);
 }
 ::-webkit-scrollbar-thumb {
-  background: #252D42;
-  border-radius: 3px;
+  background: #D8D2C2;
+  border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #3B4564;
+.dark ::-webkit-scrollbar-thumb {
+  background: #252D42;
+}
+
+/* Premium Rounded Cards (24px-28px radius) */
+.card-premium {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 26px;
+  box-shadow: 0 4px 20px -2px rgba(23, 23, 23, 0.03), 0 2px 6px -1px rgba(23, 23, 23, 0.02);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+.card-premium:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px -4px rgba(23, 23, 23, 0.06), 0 4px 12px -2px rgba(23, 23, 23, 0.03);
+  border-color: #DDD7C8;
+}
+.dark .card-premium:hover {
+  border-color: #384566;
+}
+
+/* Hero Gold Highlighted Card */
+.card-hero-gold {
+  background: linear-gradient(135deg, #FFD81A 0%, #FFE352 100%);
+  border: 1px solid #F0C800;
+  border-radius: 26px;
+  box-shadow: 0 8px 28px -4px rgba(255, 216, 26, 0.32);
+  color: #171717;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-hero-gold:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px -4px rgba(255, 216, 26, 0.45);
+}
+
+/* Rounded Pill Button */
+.btn-pill-gold {
+  background-color: var(--accent-gold);
+  color: #171717;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.6rem 1.25rem;
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 10px rgba(255, 216, 26, 0.28);
+}
+.btn-pill-gold:hover {
+  background-color: var(--accent-gold-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(255, 216, 26, 0.38);
+}
+.btn-pill-gold:active {
+  transform: translateY(0);
 }
 
 /* Semantic Badges */
-.badge-safe {
-  background-color: rgba(53, 208, 127, 0.12);
+.badge-semantic-safe {
+  background-color: rgba(69, 179, 107, 0.12);
+  color: #2F8A4F;
+  border: 1px solid rgba(69, 179, 107, 0.28);
+}
+.dark .badge-semantic-safe {
   color: #35D07F;
-  border: 1px solid rgba(53, 208, 127, 0.25);
 }
 
-.badge-caution {
-  background-color: rgba(245, 185, 66, 0.12);
+.badge-semantic-caution {
+  background-color: rgba(255, 138, 61, 0.12);
+  color: #D36315;
+  border: 1px solid rgba(255, 138, 61, 0.28);
+}
+.dark .badge-semantic-caution {
   color: #F5B942;
-  border: 1px solid rgba(245, 185, 66, 0.25);
 }
 
-.badge-critical {
-  background-color: rgba(255, 92, 104, 0.12);
+.badge-semantic-critical {
+  background-color: rgba(231, 76, 60, 0.12);
+  color: #C0392B;
+  border: 1px solid rgba(231, 76, 60, 0.28);
+}
+.dark .badge-semantic-critical {
   color: #FF5C68;
-  border: 1px solid rgba(255, 92, 104, 0.25);
 }
 
-.badge-od {
-  background-color: rgba(56, 189, 248, 0.12);
-  color: #38BDF8;
-  border: 1px solid rgba(56, 189, 248, 0.25);
+.badge-semantic-purple {
+  background-color: rgba(122, 61, 240, 0.1);
+  color: #7A3DF0;
+  border: 1px solid rgba(122, 61, 240, 0.24);
 }
-
-.badge-ai {
-  background-color: rgba(167, 139, 250, 0.12);
+.dark .badge-semantic-purple {
   color: #A78BFA;
-  border: 1px solid rgba(167, 139, 250, 0.25);
 }
 
-/* Card Foundations */
-.card-surface {
-  background-color: #0F1422;
-  border: 1px solid #252D42;
-  border-radius: 0.75rem;
+.badge-semantic-blue {
+  background-color: rgba(76, 110, 245, 0.1);
+  color: #3B5BDB;
+  border: 1px solid rgba(76, 110, 245, 0.24);
 }
-
-.card-elevated {
-  background-color: #151B2B;
-  border: 1px solid #252D42;
-  border-radius: 0.75rem;
+.dark .badge-semantic-blue {
+  color: #38BDF8;
 }

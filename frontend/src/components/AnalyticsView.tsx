@@ -48,19 +48,19 @@ export default function AnalyticsView({ sectionId, selectedTarget }: AnalyticsVi
   const targetPct = Math.round(selectedTarget * 100);
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6">
+    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#F7F4E8] text-[#171717]">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-sm font-semibold text-[#F5F3EA]">
+          <h2 className="text-xl font-extrabold text-[#171717] tracking-tight">
             Academic Attendance Analytics &amp; Health Distributions
           </h2>
-          <p className="text-xs text-[#70788F]">
+          <p className="text-xs text-[#7A7A7A] mt-0.5">
             Data-dense visual telemetry calibrated to the {targetPct}% requirement threshold.
           </p>
         </div>
 
-        <span className="text-xs font-mono px-2.5 py-1 rounded bg-[#151B2B] text-[#A7AEC2] border border-[#252D42]">
+        <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-[#FFFDF8] text-[#171717] border border-[#E8E3D7] shadow-sm self-start sm:self-auto">
           RECHARTS TELEMETRY
         </span>
       </div>
@@ -68,58 +68,60 @@ export default function AnalyticsView({ sectionId, selectedTarget }: AnalyticsVi
       {/* Top Grid: Comparison Bar Chart & Health Distribution Pie */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Subject Attendance Comparison (Bar Chart) */}
-        <div className="lg:col-span-2 p-5 rounded-xl bg-[#0F1422] border border-[#252D42] space-y-4">
+        <div className="lg:col-span-2 p-7 rounded-[28px] bg-[#FFFDF8] border border-[#E8E3D7] space-y-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-[#F5F3EA] uppercase tracking-wider flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-[#7C5CFF]" />
+            <h3 className="text-xs font-bold text-[#171717] uppercase tracking-wider flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-[#7A3DF0]" />
               Subject Attendance vs. Target Threshold
             </h3>
-            <span className="text-[11px] text-[#70788F]">
+            <span className="text-[11px] font-semibold text-[#7A7A7A]">
               Reference line: {targetPct}%
             </span>
           </div>
 
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.comparison} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#252D42" vertical={false} />
+              <BarChart data={data.comparison} margin={{ top: 10, right: 10, left: -20, bottom: 25 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E8E3D7" vertical={false} />
                 <XAxis
                   dataKey="name"
-                  stroke="#70788F"
-                  tick={{ fill: "#A7AEC2", fontSize: 10 }}
+                  stroke="#7A7A7A"
+                  tick={{ fill: "#171717", fontSize: 10, fontWeight: 500 }}
                   interval={0}
                   angle={-25}
                   textAnchor="end"
                 />
                 <YAxis
                   domain={[0, 100]}
-                  stroke="#70788F"
-                  tick={{ fill: "#70788F", fontSize: 10 }}
+                  stroke="#7A7A7A"
+                  tick={{ fill: "#7A7A7A", fontSize: 10 }}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#151B2B",
-                    borderColor: "#252D42",
-                    borderRadius: "8px",
-                    color: "#F5F3EA",
+                    backgroundColor: "#FFFDF8",
+                    borderColor: "#E8E3D7",
+                    borderRadius: "16px",
+                    color: "#171717",
                     fontSize: "12px",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+                    fontWeight: 600,
                   }}
                   formatter={(val: any) => [`${val}%`, "Attendance"]}
                 />
-                <ReferenceLine y={targetPct} stroke="#7C5CFF" strokeDasharray="4 4" strokeWidth={1.5} />
+                <ReferenceLine y={targetPct} stroke="#FFD81A" strokeDasharray="4 4" strokeWidth={2} />
                 <Bar
                   dataKey="current"
                   name="Current Attendance"
-                  radius={[4, 4, 0, 0]}
-                  fill="#35D07F"
+                  radius={[6, 6, 0, 0]}
+                  fill="#45B36B"
                 >
                   {data.comparison.map((entry: any, index: number) => {
                     const color =
                       entry.status === "CRITICAL"
-                        ? "#FF5C68"
+                        ? "#E74C3C"
                         : entry.status === "WATCH"
-                        ? "#F5B942"
-                        : "#35D07F";
+                        ? "#FF8A3D"
+                        : "#45B36B";
                     return <Cell key={`cell-${index}`} fill={color} />;
                   })}
                 </Bar>
@@ -129,15 +131,15 @@ export default function AnalyticsView({ sectionId, selectedTarget }: AnalyticsVi
         </div>
 
         {/* Health Distribution Donut Chart */}
-        <div className="p-5 rounded-xl bg-[#0F1422] border border-[#252D42] space-y-4 flex flex-col justify-between">
+        <div className="p-7 rounded-[28px] bg-[#FFFDF8] border border-[#E8E3D7] space-y-5 flex flex-col justify-between shadow-sm">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-bold text-[#F5F3EA] uppercase tracking-wider flex items-center gap-2">
-                <PieIcon className="w-4 h-4 text-[#7C5CFF]" />
+              <h3 className="text-xs font-bold text-[#171717] uppercase tracking-wider flex items-center gap-2">
+                <PieIcon className="w-4 h-4 text-[#7A3DF0]" />
                 Course Health Distribution
               </h3>
             </div>
-            <p className="text-[11px] text-[#70788F]">
+            <p className="text-[11px] text-[#7A7A7A]">
               Deterministic classification breakdown
             </p>
 
@@ -151,17 +153,21 @@ export default function AnalyticsView({ sectionId, selectedTarget }: AnalyticsVi
                     paddingAngle={4}
                     dataKey="value"
                   >
-                    {data.distribution.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
+                    {data.distribution.map((entry: any, index: number) => {
+                      const color =
+                        entry.name?.includes("Critical") ? "#E74C3C" :
+                        entry.name?.includes("Watch") || entry.name?.includes("Caution") ? "#FF8A3D" : "#45B36B";
+                      return <Cell key={`cell-${index}`} fill={color} />;
+                    })}
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#151B2B",
-                      borderColor: "#252D42",
-                      borderRadius: "8px",
-                      color: "#F5F3EA",
+                      backgroundColor: "#FFFDF8",
+                      borderColor: "#E8E3D7",
+                      borderRadius: "16px",
+                      color: "#171717",
                       fontSize: "12px",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
                     }}
                   />
                 </PieChart>
@@ -169,33 +175,38 @@ export default function AnalyticsView({ sectionId, selectedTarget }: AnalyticsVi
             </div>
           </div>
 
-          <div className="space-y-1.5 pt-3 border-t border-[#252D42]">
-            {data.distribution.map((item: any, idx: number) => (
-              <div key={idx} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="text-[#A7AEC2]">{item.name}</span>
+          <div className="space-y-2 pt-4 border-t border-[#E8E3D7]">
+            {data.distribution.map((item: any, idx: number) => {
+              const color =
+                item.name?.includes("Critical") ? "#E74C3C" :
+                item.name?.includes("Watch") || item.name?.includes("Caution") ? "#FF8A3D" : "#45B36B";
+              return (
+                <div key={idx} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+                    <span className="text-[#7A7A7A] font-medium">{item.name}</span>
+                  </div>
+                  <span className="font-extrabold text-[#171717]">{item.value} Courses</span>
                 </div>
-                <span className="font-bold text-[#F5F3EA]">{item.value} Courses</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Attendance Trend Line Chart (Section 34) */}
-      <div className="p-5 rounded-xl bg-[#0F1422] border border-[#252D42] space-y-4">
+      {/* Attendance Trend Line Chart */}
+      <div className="p-7 rounded-[28px] bg-[#FFFDF8] border border-[#E8E3D7] space-y-5 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-xs font-bold text-[#F5F3EA] uppercase tracking-wider flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-[#7C5CFF]" />
+            <h3 className="text-xs font-bold text-[#171717] uppercase tracking-wider flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-[#7A3DF0]" />
               Weekly Attendance Trajectory Trend
             </h3>
-            <p className="text-[11px] text-[#70788F]">
+            <p className="text-[11px] text-[#7A7A7A] mt-0.5">
               Historical progression across Semester III academic calendar
             </p>
           </div>
-          <span className="text-xs font-semibold text-[#35D07F]">
+          <span className="text-xs font-bold text-[#45B36B]">
             Currently +9.7% above minimum detention
           </span>
         </div>
@@ -203,27 +214,29 @@ export default function AnalyticsView({ sectionId, selectedTarget }: AnalyticsVi
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data.trend} margin={{ top: 10, right: 20, left: -20, bottom: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#252D42" vertical={false} />
-              <XAxis dataKey="week" stroke="#70788F" tick={{ fill: "#A7AEC2", fontSize: 11 }} />
-              <YAxis domain={[60, 100]} stroke="#70788F" tick={{ fill: "#70788F", fontSize: 10 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E8E3D7" vertical={false} />
+              <XAxis dataKey="week" stroke="#7A7A7A" tick={{ fill: "#171717", fontSize: 11 }} />
+              <YAxis domain={[60, 100]} stroke="#7A7A7A" tick={{ fill: "#7A7A7A", fontSize: 10 }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#151B2B",
-                  borderColor: "#252D42",
-                  borderRadius: "8px",
-                  color: "#F5F3EA",
+                  backgroundColor: "#FFFDF8",
+                  borderColor: "#E8E3D7",
+                  borderRadius: "16px",
+                  color: "#171717",
                   fontSize: "12px",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+                  fontWeight: 600,
                 }}
                 formatter={(val: any) => [`${val}%`, "Attendance"]}
               />
-              <ReferenceLine y={targetPct} stroke="#7C5CFF" strokeDasharray="4 4" label={{ value: `Target ${targetPct}%`, fill: "#9278FF", fontSize: 11, position: "top" }} />
+              <ReferenceLine y={targetPct} stroke="#FFD81A" strokeDasharray="4 4" strokeWidth={2} label={{ value: `Target ${targetPct}%`, fill: "#171717", fontSize: 11, position: "top", fontWeight: "bold" }} />
               <Line
                 type="monotone"
                 dataKey="attendance"
-                stroke="#7C5CFF"
+                stroke="#171717"
                 strokeWidth={3}
-                dot={{ r: 4, fill: "#7C5CFF" }}
-                activeDot={{ r: 6, fill: "#9278FF" }}
+                dot={{ r: 4, fill: "#FFD81A", stroke: "#171717", strokeWidth: 1.5 }}
+                activeDot={{ r: 6, fill: "#FFD81A", stroke: "#171717", strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>

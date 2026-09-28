@@ -95,35 +95,35 @@ export default function AttendanceImportView({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6">
+    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#F7F4E8] text-[#171717]">
       {/* Header & Mode Switcher */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-sm font-semibold text-[#F5F3EA]">
+          <h2 className="text-xl font-extrabold text-[#171717] tracking-tight">
             Attendance Ingestion &amp; OCR Engine
           </h2>
-          <p className="text-xs text-[#70788F]">
+          <p className="text-xs text-[#7A7A7A] mt-0.5">
             Upload college ERP screenshots with deterministic validation, alias resolution, and manual review.
           </p>
         </div>
 
-        <div className="flex items-center bg-[#0F1422] p-1 rounded-lg border border-[#252D42]">
+        <div className="flex items-center bg-[#FFFDF8] p-1.5 rounded-2xl border border-[#E8E3D7] shadow-sm self-start sm:self-auto">
           <button
             onClick={() => setActiveTab("ocr")}
-            className={`px-3 py-1.5 text-xs font-medium rounded transition-all ${
+            className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
               activeTab === "ocr"
-                ? "bg-[#7C5CFF] text-[#F5F3EA]"
-                : "text-[#A7AEC2] hover:text-[#F5F3EA]"
+                ? "bg-[#FFD81A] text-[#171717] shadow-sm"
+                : "text-[#7A7A7A] hover:text-[#171717]"
             }`}
           >
             Screenshot OCR
           </button>
           <button
             onClick={() => setActiveTab("manual")}
-            className={`px-3 py-1.5 text-xs font-medium rounded transition-all ${
+            className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
               activeTab === "manual"
-                ? "bg-[#7C5CFF] text-[#F5F3EA]"
-                : "text-[#A7AEC2] hover:text-[#F5F3EA]"
+                ? "bg-[#FFD81A] text-[#171717] shadow-sm"
+                : "text-[#7A7A7A] hover:text-[#171717]"
             }`}
           >
             Manual Adjustment
@@ -134,14 +134,14 @@ export default function AttendanceImportView({
       {activeTab === "ocr" ? (
         <div className="space-y-6">
           {/* Upload Dropzone Card */}
-          <div className="p-8 rounded-xl bg-[#0F1422] border-2 border-dashed border-[#252D42] hover:border-[#7C5CFF]/60 transition-colors flex flex-col items-center justify-center text-center">
-            <div className="w-12 h-12 rounded-xl bg-[#151B2B] border border-[#252D42] flex items-center justify-center mb-3">
-              <Upload className="w-6 h-6 text-[#7C5CFF]" />
+          <div className="p-10 rounded-[28px] bg-[#FFFDF8] border-2 border-dashed border-[#E8E3D7] hover:border-[#171717] transition-all flex flex-col items-center justify-center text-center shadow-sm">
+            <div className="w-14 h-14 rounded-2xl bg-[#FAFAFC] border border-[#E8E3D7] flex items-center justify-center mb-4 shadow-sm">
+              <Upload className="w-7 h-7 text-[#7A3DF0]" />
             </div>
-            <h3 className="text-xs font-bold text-[#F5F3EA]">
+            <h3 className="text-sm font-extrabold text-[#171717]">
               Drag &amp; Drop Attendance Portal Screenshot
             </h3>
-            <p className="text-[11px] text-[#70788F] max-w-sm mt-1 mb-4">
+            <p className="text-xs text-[#7A7A7A] max-w-sm mt-1 mb-5">
               Supports PNG, JPG, or PDF screenshots from SRM Academia, Evarsity, or CollPoll portals.
             </p>
 
@@ -149,16 +149,16 @@ export default function AttendanceImportView({
               <button
                 onClick={handleSimulateOCR}
                 disabled={loading}
-                className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#7C5CFF] hover:bg-[#9278FF] text-[#F5F3EA] shadow-md transition-all flex items-center gap-2"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#FFD81A] hover:bg-[#FACC15] text-[#171717] shadow-sm transition-all flex items-center gap-2 active:scale-95"
               >
                 {loading ? (
                   <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#171717]" />
                     <span>Processing Vision AI...</span>
                   </>
                 ) : (
                   <>
-                    <FileImage className="w-3.5 h-3.5" />
+                    <FileImage className="w-4 h-4 text-[#171717]" />
                     <span>Load SRM College ERP Sample Screenshot</span>
                   </>
                 )}
@@ -166,44 +166,44 @@ export default function AttendanceImportView({
             </div>
           </div>
 
-          {/* OCR Pipeline Steps Visualization (Section 20) */}
-          <div className="p-4 rounded-xl bg-[#0F1422] border border-[#252D42]">
-            <p className="text-[11px] uppercase tracking-wider font-semibold text-[#70788F] mb-3">
+          {/* OCR Pipeline Steps Visualization */}
+          <div className="p-6 rounded-[28px] bg-[#FFFDF8] border border-[#E8E3D7] shadow-sm">
+            <p className="text-[11px] uppercase tracking-wider font-bold text-[#7A7A7A] mb-4">
               Deterministic Verification Architecture
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              <div className="p-2.5 rounded-lg bg-[#151B2B] border border-[#252D42]">
-                <span className="text-[10px] text-[#7C5CFF] font-mono block">STAGE 1</span>
-                <span className="font-semibold text-[#F5F3EA] block mt-0.5">Vision OCR</span>
-                <span className="text-[10px] text-[#70788F]">Extracts raw numbers</span>
+              <div className="p-4 rounded-2xl bg-[#FAFAFC] border border-[#E8E3D7]">
+                <span className="text-[10px] text-[#7A3DF0] font-mono font-bold block">STAGE 1</span>
+                <span className="font-bold text-[#171717] block mt-1">Vision OCR</span>
+                <span className="text-[11px] text-[#7A7A7A]">Extracts raw numbers</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#151B2B] border border-[#252D42]">
-                <span className="text-[10px] text-[#7C5CFF] font-mono block">STAGE 2</span>
-                <span className="font-semibold text-[#F5F3EA] block mt-0.5">Subject Matcher</span>
-                <span className="text-[10px] text-[#70788F]">Code &rarr; Name &rarr; Alias</span>
+              <div className="p-4 rounded-2xl bg-[#FAFAFC] border border-[#E8E3D7]">
+                <span className="text-[10px] text-[#7A3DF0] font-mono font-bold block">STAGE 2</span>
+                <span className="font-bold text-[#171717] block mt-1">Subject Matcher</span>
+                <span className="text-[11px] text-[#7A7A7A]">Code &rarr; Name &rarr; Alias</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#151B2B] border border-[#252D42]">
-                <span className="text-[10px] text-[#7C5CFF] font-mono block">STAGE 3</span>
-                <span className="font-semibold text-[#F5F3EA] block mt-0.5">Validation</span>
-                <span className="text-[10px] text-[#70788F]">Rejects Attended &gt; Conducted</span>
+              <div className="p-4 rounded-2xl bg-[#FAFAFC] border border-[#E8E3D7]">
+                <span className="text-[10px] text-[#7A3DF0] font-mono font-bold block">STAGE 3</span>
+                <span className="font-bold text-[#171717] block mt-1">Validation</span>
+                <span className="text-[11px] text-[#7A7A7A]">Rejects Attended &gt; Conducted</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#151B2B] border border-[#252D42]">
-                <span className="text-[10px] text-[#7C5CFF] font-mono block">STAGE 4</span>
-                <span className="font-semibold text-[#F5F3EA] block mt-0.5">User Review</span>
-                <span className="text-[10px] text-[#70788F]">Never commits blindly</span>
+              <div className="p-4 rounded-2xl bg-[#FAFAFC] border border-[#E8E3D7]">
+                <span className="text-[10px] text-[#7A3DF0] font-mono font-bold block">STAGE 4</span>
+                <span className="font-bold text-[#171717] block mt-1">User Review</span>
+                <span className="text-[11px] text-[#7A7A7A]">Never commits blindly</span>
               </div>
             </div>
           </div>
 
-          {/* OCR Review Table (Section 25) */}
+          {/* OCR Review Table */}
           {ocrResults && (
-            <div className="p-5 rounded-xl bg-[#0F1422] border border-[#252D42] space-y-4">
+            <div className="p-6 rounded-[28px] bg-[#FFFDF8] border border-[#E8E3D7] space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xs font-bold text-[#F5F3EA] uppercase tracking-wider">
+                  <h3 className="text-xs font-bold text-[#171717] uppercase tracking-wider">
                     Extracted Attendance Table (Review Required)
                   </h3>
-                  <p className="text-[11px] text-[#70788F]">
+                  <p className="text-[11px] text-[#7A7A7A] mt-0.5">
                     Source: {ocrResults.filename} • Overall Confidence: {Math.round(ocrResults.overall_confidence * 100)}%
                   </p>
                 </div>
@@ -212,17 +212,17 @@ export default function AttendanceImportView({
                   <button
                     onClick={handleConfirmAll}
                     disabled={loading}
-                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#35D07F] hover:bg-[#35D07F]/90 text-black flex items-center gap-1.5 transition-all"
+                    className="px-4 py-2 rounded-xl text-xs font-bold bg-[#45B36B] hover:bg-[#3ea05f] text-white flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
                   >
-                    <Check className="w-3.5 h-3.5" />
+                    <Check className="w-4 h-4" />
                     <span>Confirm All &amp; Calculate</span>
                   </button>
                 </div>
               </div>
 
               {confirmedMessage && (
-                <div className="p-3 rounded-lg bg-[#35D07F]/10 border border-[#35D07F]/30 text-[#35D07F] text-xs flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <div className="p-3.5 rounded-2xl bg-[#45B36B]/15 border border-[#45B36B]/30 text-[#45B36B] text-xs font-semibold flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-[#45B36B]" />
                   <span>{confirmedMessage}</span>
                 </div>
               )}
@@ -230,76 +230,75 @@ export default function AttendanceImportView({
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-[#252D42] text-[11px] text-[#70788F]">
-                      <th className="pb-2 font-medium">Extracted Subject</th>
-                      <th className="pb-2 font-medium">Resolved Course</th>
-                      <th className="pb-2 font-medium text-center">Attended</th>
-                      <th className="pb-2 font-medium text-center">Conducted</th>
-                      <th className="pb-2 font-medium text-center">% Rate</th>
-                      <th className="pb-2 font-medium text-center">Confidence</th>
-                      <th className="pb-2 font-medium text-center">Status</th>
-                      <th className="pb-2 font-medium text-right">Actions</th>
+                    <tr className="border-b border-[#E8E3D7] text-[11px] text-[#7A7A7A] uppercase font-semibold">
+                      <th className="pb-3">Extracted Subject</th>
+                      <th className="pb-3">Resolved Course</th>
+                      <th className="pb-3 text-center">Attended</th>
+                      <th className="pb-3 text-center">Conducted</th>
+                      <th className="pb-3 text-center">% Rate</th>
+                      <th className="pb-3 text-center">Confidence</th>
+                      <th className="pb-3 text-center">Status</th>
+                      <th className="pb-3 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#252D42]/60 text-[#A7AEC2]">
+                  <tbody className="divide-y divide-[#E8E3D7] text-[#171717]">
                     {ocrResults.subjects.map((row: any, idx: number) => {
                       const isEditing = editingRowIndex === idx;
                       const isHigh = row.confidence_tier === "HIGH";
-                      const isReview = row.confidence_tier === "MEDIUM" || row.status === "REVIEW_REQUIRED";
                       const pct = row.conducted > 0 ? Math.round((row.attended / row.conducted) * 100) : 0;
 
                       return (
-                        <tr key={idx} className="hover:bg-[#151B2B]/40 transition-colors">
-                          <td className="py-2.5 font-mono text-[#F5F3EA]">
+                        <tr key={idx} className="hover:bg-[#FAFAFC]/60 transition-colors">
+                          <td className="py-3 font-mono font-medium text-[#171717]">
                             {row.raw_subject}
                           </td>
-                          <td className="py-2.5">
-                            <span className="font-semibold text-[#F5F3EA] block">
+                          <td className="py-3">
+                            <span className="font-bold text-[#171717] block">
                               {row.matched_subject_name || "Unmapped"}
                             </span>
-                            <span className="text-[10px] text-[#70788F] font-mono">
+                            <span className="text-[10px] text-[#7A7A7A] font-mono">
                               {row.matched_subject_code || "Review needed"}
                             </span>
                           </td>
 
                           {/* Attended & Conducted */}
-                          <td className="py-2.5 text-center">
+                          <td className="py-3 text-center">
                             {isEditing ? (
                               <input
                                 type="number"
                                 value={editAttended}
                                 onChange={(e) => setEditAttended(Number(e.target.value))}
-                                className="w-14 bg-[#151B2B] text-center border border-[#7C5CFF] rounded p-1 text-[#F5F3EA]"
+                                className="w-14 bg-[#FAFAFC] text-center border border-[#FFD81A] rounded-lg p-1 text-[#171717] font-bold"
                               />
                             ) : (
-                              <span className="font-semibold text-[#F5F3EA]">{row.attended}</span>
+                              <span className="font-extrabold text-[#171717]">{row.attended}</span>
                             )}
                           </td>
-                          <td className="py-2.5 text-center">
+                          <td className="py-3 text-center">
                             {isEditing ? (
                               <input
                                 type="number"
                                 value={editConducted}
                                 onChange={(e) => setEditConducted(Number(e.target.value))}
-                                className="w-14 bg-[#151B2B] text-center border border-[#7C5CFF] rounded p-1 text-[#F5F3EA]"
+                                className="w-14 bg-[#FAFAFC] text-center border border-[#FFD81A] rounded-lg p-1 text-[#171717] font-bold"
                               />
                             ) : (
-                              <span className="font-semibold text-[#F5F3EA]">{row.conducted}</span>
+                              <span className="font-extrabold text-[#171717]">{row.conducted}</span>
                             )}
                           </td>
 
                           {/* % Rate */}
-                          <td className="py-2.5 text-center font-bold text-[#F5F3EA]">
+                          <td className="py-3 text-center font-extrabold text-[#171717]">
                             {pct}%
                           </td>
 
                           {/* Confidence */}
-                          <td className="py-2.5 text-center">
+                          <td className="py-3 text-center">
                             <span
-                              className={`text-[10px] font-mono px-2 py-0.5 rounded ${
+                              className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold ${
                                 isHigh
-                                  ? "bg-[#35D07F]/10 text-[#35D07F] border border-[#35D07F]/30"
-                                  : "bg-[#F5B942]/10 text-[#F5B942] border border-[#F5B942]/30"
+                                  ? "bg-[#45B36B]/15 text-[#45B36B] border border-[#45B36B]/30"
+                                  : "bg-[#FF8A3D]/15 text-[#FF8A3D] border border-[#FF8A3D]/30"
                               }`}
                             >
                               {Math.round(row.confidence * 100)}%
@@ -307,27 +306,27 @@ export default function AttendanceImportView({
                           </td>
 
                           {/* Status */}
-                          <td className="py-2.5 text-center">
+                          <td className="py-3 text-center">
                             {isHigh ? (
-                              <span className="text-[10px] font-semibold text-[#35D07F]">High</span>
+                              <span className="text-[10px] font-bold text-[#45B36B]">● Valid</span>
                             ) : (
-                              <span className="text-[10px] font-semibold text-[#F5B942]">Review</span>
+                              <span className="text-[10px] font-bold text-[#FF8A3D]">● Review</span>
                             )}
                           </td>
 
                           {/* Actions */}
-                          <td className="py-2.5 text-right">
+                          <td className="py-3 text-right">
                             {isEditing ? (
-                              <div className="flex items-center justify-end gap-1">
+                              <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   onClick={() => handleSaveEdit(idx)}
-                                  className="p-1 rounded bg-[#35D07F]/20 text-[#35D07F] hover:bg-[#35D07F]/30"
+                                  className="p-1 rounded-lg bg-[#45B36B]/20 text-[#45B36B] hover:bg-[#45B36B]/30"
                                 >
                                   <Check className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   onClick={() => setEditingRowIndex(null)}
-                                  className="p-1 rounded bg-red-900/20 text-red-400 hover:bg-red-900/30"
+                                  className="p-1 rounded-lg bg-[#E74C3C]/20 text-[#E74C3C] hover:bg-[#E74C3C]/30"
                                 >
                                   <X className="w-3.5 h-3.5" />
                                 </button>
@@ -339,7 +338,7 @@ export default function AttendanceImportView({
                                   setEditAttended(row.attended);
                                   setEditConducted(row.conducted);
                                 }}
-                                className="px-2 py-1 rounded bg-[#151B2B] text-[#A7AEC2] hover:text-[#F5F3EA] border border-[#252D42] text-[11px]"
+                                className="px-2.5 py-1 rounded-xl bg-[#FAFAFC] text-[#171717] hover:bg-[#F7F4E8] border border-[#E8E3D7] text-[11px] font-semibold transition-all shadow-sm"
                               >
                                 Edit
                               </button>
@@ -356,32 +355,32 @@ export default function AttendanceImportView({
         </div>
       ) : (
         /* Manual Entry Form */
-        <div className="max-w-xl mx-auto p-6 rounded-xl bg-[#0F1422] border border-[#252D42] space-y-5">
+        <div className="max-w-xl mx-auto p-8 rounded-[28px] bg-[#FFFDF8] border border-[#E8E3D7] space-y-6 shadow-sm">
           <div>
-            <h3 className="text-xs font-bold text-[#F5F3EA] uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-[#171717] uppercase tracking-wider">
               Manual Attendance Correction
             </h3>
-            <p className="text-[11px] text-[#70788F]">
+            <p className="text-[11px] text-[#7A7A7A] mt-0.5">
               Directly update conducted and attended counts for any subject. Triggers immediate recalculation.
             </p>
           </div>
 
           {manualSuccess && (
-            <div className="p-3 rounded-lg bg-[#35D07F]/10 border border-[#35D07F]/30 text-[#35D07F] text-xs flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <div className="p-3.5 rounded-2xl bg-[#45B36B]/15 border border-[#45B36B]/30 text-[#45B36B] text-xs font-semibold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-[#45B36B]" />
               <span>Attendance updated successfully!</span>
             </div>
           )}
 
           <form onSubmit={handleManualSubmit} className="space-y-4">
             <div>
-              <label className="text-xs font-medium text-[#A7AEC2] block mb-1.5">
+              <label className="text-xs font-semibold text-[#7A7A7A] block mb-1.5">
                 Target Subject
               </label>
               <select
                 value={manualSubjectId}
                 onChange={(e) => setManualSubjectId(Number(e.target.value))}
-                className="w-full bg-[#151B2B] text-xs text-[#F5F3EA] border border-[#252D42] rounded-lg p-2.5 focus:border-[#7C5CFF] focus:outline-none"
+                className="w-full bg-[#FAFAFC] text-xs text-[#171717] font-medium border border-[#E8E3D7] rounded-xl p-3 focus:border-[#FFD81A] focus:outline-none transition-all shadow-sm"
               >
                 <option value={4}>21ECC203T — Digital Logic Design</option>
                 <option value={1}>21MAB201T — Transforms and Boundary Value Problems</option>
@@ -396,7 +395,7 @@ export default function AttendanceImportView({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-medium text-[#A7AEC2] block mb-1.5">
+                <label className="text-xs font-semibold text-[#7A7A7A] block mb-1.5">
                   Attended Classes
                 </label>
                 <input
@@ -404,12 +403,12 @@ export default function AttendanceImportView({
                   min={0}
                   value={manualAttended}
                   onChange={(e) => setManualAttended(Number(e.target.value))}
-                  className="w-full bg-[#151B2B] text-xs text-[#F5F3EA] border border-[#252D42] rounded-lg p-2.5 focus:border-[#7C5CFF] focus:outline-none"
+                  className="w-full bg-[#FAFAFC] text-xs text-[#171717] font-bold border border-[#E8E3D7] rounded-xl p-3 focus:border-[#FFD81A] focus:outline-none transition-all shadow-sm"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-[#A7AEC2] block mb-1.5">
+                <label className="text-xs font-semibold text-[#7A7A7A] block mb-1.5">
                   Conducted Classes
                 </label>
                 <input
@@ -417,7 +416,7 @@ export default function AttendanceImportView({
                   min={manualAttended}
                   value={manualConducted}
                   onChange={(e) => setManualConducted(Number(e.target.value))}
-                  className="w-full bg-[#151B2B] text-xs text-[#F5F3EA] border border-[#252D42] rounded-lg p-2.5 focus:border-[#7C5CFF] focus:outline-none"
+                  className="w-full bg-[#FAFAFC] text-xs text-[#171717] font-bold border border-[#E8E3D7] rounded-xl p-3 focus:border-[#FFD81A] focus:outline-none transition-all shadow-sm"
                 />
               </div>
             </div>
@@ -425,7 +424,7 @@ export default function AttendanceImportView({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-lg text-xs font-semibold bg-[#7C5CFF] hover:bg-[#9278FF] text-[#F5F3EA] shadow-md transition-all"
+              className="w-full py-3 rounded-xl text-xs font-bold bg-[#FFD81A] hover:bg-[#FACC15] text-[#171717] shadow-sm transition-all active:scale-95"
             >
               Update Record
             </button>

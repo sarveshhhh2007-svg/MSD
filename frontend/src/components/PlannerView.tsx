@@ -67,14 +67,14 @@ export default function PlannerView({ sectionId, onRefreshData }: PlannerViewPro
   const currentClasses = groupedByDate[selectedDate] || [];
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6">
+    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#F7F4E8] text-[#171717]">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-sm font-semibold text-[#F5F3EA]">
+          <h2 className="text-xl font-extrabold text-[#171717] tracking-tight">
             Semester Planner &amp; Occurrence Calendar
           </h2>
-          <p className="text-xs text-[#70788F]">
+          <p className="text-xs text-[#7A7A7A] mt-0.5">
             Actual concrete timetable sessions mapped to calendar dates (excludes holidays &amp; breaks).
           </p>
         </div>
@@ -83,15 +83,15 @@ export default function PlannerView({ sectionId, onRefreshData }: PlannerViewPro
           onClick={() => {
             alert("Calendar sync: iCalendar (.ics) export generated with all SRM IST classes!");
           }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#151B2B] text-[#A7AEC2] hover:text-[#F5F3EA] border border-[#252D42] transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-[#FFFDF8] text-[#171717] hover:bg-[#FAFAFC] border border-[#E8E3D7] shadow-sm transition-all active:scale-95 whitespace-nowrap self-start sm:self-auto"
         >
-          <Download className="w-3.5 h-3.5 text-[#7C5CFF]" />
+          <Download className="w-4 h-4 text-[#4C6EF5]" />
           <span>Export iCal (.ics)</span>
         </button>
       </div>
 
       {/* Date Strip Navigation */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2">
+      <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none">
         {availableDates.slice(0, 14).map((dStr) => {
           const dObj = new Date(dStr);
           const isSelected = selectedDate === dStr;
@@ -103,34 +103,34 @@ export default function PlannerView({ sectionId, onRefreshData }: PlannerViewPro
             <button
               key={dStr}
               onClick={() => setSelectedDate(dStr)}
-              className={`p-2.5 px-4 rounded-xl border shrink-0 text-center transition-all ${
+              className={`p-3 px-5 rounded-[22px] border shrink-0 text-center transition-all ${
                 isSelected
-                  ? "bg-[#7C5CFF] border-[#7C5CFF] text-[#F5F3EA] shadow-md shadow-[#7C5CFF]/20"
-                  : "bg-[#0F1422] border-[#252D42] text-[#A7AEC2] hover:border-[#384566]"
+                  ? "bg-[#FFD81A] border-[#FFD81A] text-[#171717] shadow-md font-bold scale-105"
+                  : "bg-[#FFFDF8] border-[#E8E3D7] text-[#7A7A7A] hover:border-[#171717] hover:text-[#171717]"
               }`}
             >
-              <span className="text-[10px] uppercase font-semibold block">{dayName}</span>
-              <span className="text-base font-bold block leading-tight">{dayNum}</span>
-              <span className="text-[9px] text-[#F5F3EA]/70 block">{month}</span>
+              <span className="text-[10px] uppercase font-bold block">{dayName}</span>
+              <span className="text-lg font-extrabold block leading-tight">{dayNum}</span>
+              <span className="text-[10px] block opacity-80">{month}</span>
             </button>
           );
         })}
       </div>
 
       {/* Classes Scheduled on Selected Date */}
-      <div className="p-6 rounded-xl bg-[#0F1422] border border-[#252D42] space-y-4">
+      <div className="p-7 rounded-[28px] bg-[#FFFDF8] border border-[#E8E3D7] space-y-5 shadow-sm">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold text-[#F5F3EA] uppercase tracking-wider flex items-center gap-2">
-            <CalendarIcon className="w-4 h-4 text-[#7C5CFF]" />
+          <h3 className="text-xs font-bold text-[#171717] uppercase tracking-wider flex items-center gap-2">
+            <CalendarIcon className="w-4 h-4 text-[#4C6EF5]" />
             Scheduled Classes for {selectedDate}
           </h3>
-          <span className="text-xs text-[#70788F]">
+          <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-[#FAFAFC] text-[#7A7A7A] border border-[#E8E3D7]">
             {currentClasses.length} Scheduled Periods
           </span>
         </div>
 
         {currentClasses.length === 0 ? (
-          <div className="p-8 text-center text-xs text-[#70788F]">
+          <div className="p-10 text-center text-xs text-[#7A7A7A] bg-[#FAFAFC] rounded-2xl border border-dashed border-[#E8E3D7]">
             No classes scheduled for this date (Weekend or College Holiday).
           </div>
         ) : (
@@ -145,27 +145,27 @@ export default function PlannerView({ sectionId, onRefreshData }: PlannerViewPro
               return (
                 <div
                   key={c.id}
-                  className="p-4 rounded-xl bg-[#151B2B] border border-[#252D42] flex flex-wrap items-center justify-between gap-4"
+                  className="p-4 rounded-2xl bg-[#FAFAFC] border border-[#E8E3D7] flex flex-wrap items-center justify-between gap-4 transition-all hover:border-[#171717]/30 hover:bg-[#FFFDF8] shadow-sm"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="p-2.5 rounded-lg bg-[#0F1422] border border-[#252D42] text-center min-w-[70px]">
-                      <span className="text-[10px] text-[#7C5CFF] font-mono block">
+                    <div className="p-3 rounded-xl bg-[#FFFDF8] border border-[#E8E3D7] text-center min-w-[76px] shadow-sm">
+                      <span className="text-[10px] text-[#7A3DF0] font-mono font-bold block">
                         PERIOD {c.period_number}
                       </span>
-                      <span className="text-xs font-bold text-[#F5F3EA] block">
+                      <span className="text-xs font-extrabold text-[#171717] block">
                         {c.start_time}
                       </span>
                     </div>
 
                     <div>
-                      <h4 className="text-xs font-bold text-[#F5F3EA]">
+                      <h4 className="text-xs font-extrabold text-[#171717]">
                         {c.subject_name}
                       </h4>
-                      <p className="text-[11px] text-[#70788F] flex items-center gap-2 mt-0.5">
-                        <span className="font-mono text-[#A7AEC2]">{c.subject_code}</span>
+                      <p className="text-[11px] text-[#7A7A7A] flex items-center gap-2 mt-0.5">
+                        <span className="font-mono font-semibold text-[#171717]">{c.subject_code}</span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-[#70788F]" />
+                          <MapPin className="w-3 h-3 text-[#7A7A7A]" />
                           IST 416
                         </span>
                       </p>
@@ -176,40 +176,40 @@ export default function PlannerView({ sectionId, onRefreshData }: PlannerViewPro
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleStatusChange(c.id, c.subject_id, "PRESENT")}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
                         isPresent
-                          ? "bg-[#35D07F]/20 text-[#35D07F] border-[#35D07F]/40 font-semibold"
-                          : "bg-[#0F1422] text-[#A7AEC2] border-[#252D42] hover:text-[#F5F3EA]"
+                          ? "bg-[#45B36B] text-white border-[#45B36B] shadow-sm"
+                          : "bg-[#FFFDF8] text-[#171717] border-[#E8E3D7] hover:border-[#45B36B]"
                       }`}
                     >
                       Present
                     </button>
                     <button
                       onClick={() => handleStatusChange(c.id, c.subject_id, "ABSENT")}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
                         isAbsent
-                          ? "bg-[#FF5C68]/20 text-[#FF5C68] border-[#FF5C68]/40 font-semibold"
-                          : "bg-[#0F1422] text-[#A7AEC2] border-[#252D42] hover:text-[#F5F3EA]"
+                          ? "bg-[#E74C3C] text-white border-[#E74C3C] shadow-sm"
+                          : "bg-[#FFFDF8] text-[#171717] border-[#E8E3D7] hover:border-[#E74C3C]"
                       }`}
                     >
                       Absent
                     </button>
                     <button
                       onClick={() => handleStatusChange(c.id, c.subject_id, "OD")}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
                         isOD
-                          ? "bg-[#7C5CFF]/20 text-[#7C5CFF] border-[#7C5CFF]/40 font-semibold"
-                          : "bg-[#0F1422] text-[#A7AEC2] border-[#252D42] hover:text-[#F5F3EA]"
+                          ? "bg-[#4C6EF5] text-white border-[#4C6EF5] shadow-sm"
+                          : "bg-[#FFFDF8] text-[#171717] border-[#E8E3D7] hover:border-[#4C6EF5]"
                       }`}
                     >
                       OD
                     </button>
                     <button
                       onClick={() => handleStatusChange(c.id, c.subject_id, "MEDICAL")}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
                         isMed
-                          ? "bg-[#38BDF8]/20 text-[#38BDF8] border-[#38BDF8]/40 font-semibold"
-                          : "bg-[#0F1422] text-[#A7AEC2] border-[#252D42] hover:text-[#F5F3EA]"
+                          ? "bg-[#4C6EF5] text-white border-[#4C6EF5] shadow-sm"
+                          : "bg-[#FFFDF8] text-[#171717] border-[#E8E3D7] hover:border-[#4C6EF5]"
                       }`}
                     >
                       Medical

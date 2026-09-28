@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-jakarta",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
   title: "NExtclass — AI-Powered Attendance Intelligence",
-  description: "NExtclass: Deterministic Attendance Intelligence, Recovery & Semester Planning System",
+  description: "NExtclass: Premium SaaS Attendance Intelligence, Prediction, Recovery Planning & Campus Room Discovery",
 };
 
 export default function RootLayout({
@@ -23,9 +19,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#080B14] text-[#F5F3EA] min-h-screen`}
+        className={`${jakarta.variable} font-sans antialiased bg-[#F7F4E8] text-[#171717] min-h-screen selection:bg-[#FFD81A]/40 selection:text-[#171717]`}
       >
         {children}
       </body>

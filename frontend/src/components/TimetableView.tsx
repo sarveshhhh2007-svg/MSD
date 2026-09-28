@@ -119,24 +119,24 @@ export default function TimetableView({
   const labsCount = subjects.filter((s) => s.attendance_unit?.includes("SESSION") || s.code.endsWith("L") || s.code.endsWith("P") || s.code.endsWith("J")).length;
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6">
+    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#F7F4E8] text-[#171717]">
       {/* SECTION 3: Select Academic Details Selector */}
-      <div className="rounded-xl bg-[#0F1422] border border-[#252D42] p-5">
-        <div className="flex items-center justify-between pb-4 border-b border-[#252D42]/80">
+      <div className="rounded-[24px] bg-[#FFFDF8] border border-[#E8E3D7] p-6 shadow-sm">
+        <div className="flex items-center justify-between pb-4 border-b border-[#E8E3D7]">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-sm text-[#F5F3EA] tracking-tight">NExtclass</span>
-              <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-[#7C5CFF]/15 text-[#9278FF] border border-[#7C5CFF]/30">
+              <span className="font-bold text-sm text-[#171717] tracking-tight">NExtclass</span>
+              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-[#FFD81A]/20 text-[#171717] font-semibold border border-[#FFD81A]/40">
                 Official Multi-Page PDF Source
               </span>
             </div>
-            <h2 className="text-xs font-semibold text-[#A7AEC2] mt-0.5">
-              Select Academic Details
+            <h2 className="text-xs font-semibold text-[#7A7A7A] mt-0.5">
+              Select Academic Details &amp; Department Slot Allocation
             </h2>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#35D07F] font-mono flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
+            <span className="text-xs text-[#45B36B] font-mono flex items-center gap-1.5 font-semibold">
+              <CheckCircle2 className="w-4 h-4 text-[#45B36B]" />
               13 Sections Ingested
             </span>
           </div>
@@ -146,13 +146,13 @@ export default function TimetableView({
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 pt-4">
           {/* Academic Year */}
           <div>
-            <label className="block text-[11px] font-medium text-[#70788F] mb-1">
+            <label className="block text-[11px] font-semibold text-[#7A7A7A] mb-1">
               Academic Year
             </label>
             <select
               value={academicYear}
               onChange={(e) => setAcademicYear(e.target.value)}
-              className="w-full bg-[#151B2B] text-xs text-[#F5F3EA] border border-[#252D42] rounded-lg px-2.5 py-1.5 focus:border-[#7C5CFF] focus:outline-none"
+              className="w-full bg-[#FAFAFC] text-xs text-[#171717] font-medium border border-[#E8E3D7] rounded-xl px-3 py-2 focus:border-[#FFD81A] focus:outline-none transition-all shadow-sm"
             >
               <option value="2026–27">2026–27</option>
               <option value="2025–26">2025–26</option>
@@ -161,7 +161,7 @@ export default function TimetableView({
 
           {/* Year */}
           <div>
-            <label className="block text-[11px] font-medium text-[#70788F] mb-1">
+            <label className="block text-[11px] font-semibold text-[#7A7A7A] mb-1">
               Year
             </label>
             <select
@@ -176,7 +176,7 @@ export default function TimetableView({
                   if (onSelectSection) onSelectSection(matchingSecs[0].id);
                 }
               }}
-              className="w-full bg-[#151B2B] text-xs text-[#F5F3EA] border border-[#252D42] rounded-lg px-2.5 py-1.5 focus:border-[#7C5CFF] focus:outline-none"
+              className="w-full bg-[#FAFAFC] text-xs text-[#171717] font-medium border border-[#E8E3D7] rounded-xl px-3 py-2 focus:border-[#FFD81A] focus:outline-none transition-all shadow-sm"
             >
               {availableYears.map((yr) => (
                 <option key={yr} value={yr}>
@@ -188,7 +188,7 @@ export default function TimetableView({
 
           {/* Department */}
           <div>
-            <label className="block text-[11px] font-medium text-[#70788F] mb-1">
+            <label className="block text-[11px] font-semibold text-[#7A7A7A] mb-1">
               Department
             </label>
             <select
@@ -204,7 +204,7 @@ export default function TimetableView({
                   if (onSelectSection) onSelectSection(matchingSecs[0].id);
                 }
               }}
-              className="w-full bg-[#151B2B] text-xs text-[#F5F3EA] border border-[#252D42] rounded-lg px-2.5 py-1.5 focus:border-[#7C5CFF] focus:outline-none"
+              className="w-full bg-[#FAFAFC] text-xs text-[#171717] font-medium border border-[#E8E3D7] rounded-xl px-3 py-2 focus:border-[#FFD81A] focus:outline-none transition-all shadow-sm"
             >
               {availableDepts.map((d) => (
                 <option key={d} value={d}>
@@ -216,7 +216,7 @@ export default function TimetableView({
 
           {/* Section */}
           <div>
-            <label className="block text-[11px] font-medium text-[#70788F] mb-1">
+            <label className="block text-[11px] font-semibold text-[#7A7A7A] mb-1">
               Section
             </label>
             <select
@@ -229,7 +229,7 @@ export default function TimetableView({
                   onSelectSection(matched.id);
                 }
               }}
-              className="w-full bg-[#151B2B] text-xs text-[#F5F3EA] border border-[#252D42] rounded-lg px-2.5 py-1.5 focus:border-[#7C5CFF] focus:outline-none"
+              className="w-full bg-[#FAFAFC] text-xs text-[#171717] font-medium border border-[#E8E3D7] rounded-xl px-3 py-2 focus:border-[#FFD81A] focus:outline-none transition-all shadow-sm"
             >
               {availableSections.length > 0 ? (
                 availableSections.map((s) => (
@@ -245,14 +245,14 @@ export default function TimetableView({
 
           {/* Semester */}
           <div>
-            <label className="block text-[11px] font-medium text-[#70788F] mb-1">
+            <label className="block text-[11px] font-semibold text-[#7A7A7A] mb-1">
               Semester
             </label>
             <div className="flex gap-2">
               <select
                 value={selectedSemester}
                 onChange={(e) => setSelectedSemester(e.target.value)}
-                className="w-full bg-[#151B2B] text-xs text-[#F5F3EA] border border-[#252D42] rounded-lg px-2.5 py-1.5 focus:border-[#7C5CFF] focus:outline-none"
+                className="w-full bg-[#FAFAFC] text-xs text-[#171717] font-medium border border-[#E8E3D7] rounded-xl px-3 py-2 focus:border-[#FFD81A] focus:outline-none transition-all shadow-sm"
               >
                 <option value="II Semester">II Semester</option>
                 <option value="IV Semester">IV Semester</option>
@@ -261,51 +261,51 @@ export default function TimetableView({
               </select>
               <button
                 onClick={handleApplySelection}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#7C5CFF] hover:bg-[#9278FF] text-[#F5F3EA] shadow-sm transition-all whitespace-nowrap"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-[#FFD81A] hover:bg-[#FACC15] text-[#171717] shadow-sm transition-all whitespace-nowrap active:scale-95"
               >
-                Load Timetable
+                Load
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* SECTION 8: Internal Timetable Validation Stats Banner */}
+      {/* Internal Timetable Validation Stats Banner */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl bg-[#0F1422] border border-[#252D42]">
-          <div className="flex items-center justify-between text-xs text-[#70788F] mb-1">
-            <span>Official Sections</span>
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#35D07F]" />
+        <div className="p-5 rounded-[24px] bg-[#FFFDF8] border border-[#E8E3D7] shadow-sm hover:-translate-y-1 transition-all">
+          <div className="flex items-center justify-between text-xs text-[#7A7A7A] mb-1">
+            <span className="font-semibold">Official Sections</span>
+            <CheckCircle2 className="w-4 h-4 text-[#45B36B]" />
           </div>
-          <p className="text-xl font-bold font-mono text-[#F5F3EA]">13 Sections</p>
-          <p className="text-[11px] text-[#35D07F] mt-1">10 PDF Files (All Ingested)</p>
+          <p className="text-2xl font-extrabold text-[#171717]">13 Sections</p>
+          <p className="text-[11px] font-medium text-[#45B36B] mt-1">10 PDF Files (All Ingested)</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-[#0F1422] border border-[#252D42]">
-          <div className="flex items-center justify-between text-xs text-[#70788F] mb-1">
-            <span>Current Subjects</span>
-            <BookOpen className="w-3.5 h-3.5 text-[#7C5CFF]" />
+        <div className="p-5 rounded-[24px] bg-[#FFFDF8] border border-[#E8E3D7] shadow-sm hover:-translate-y-1 transition-all">
+          <div className="flex items-center justify-between text-xs text-[#7A7A7A] mb-1">
+            <span className="font-semibold">Current Subjects</span>
+            <BookOpen className="w-4 h-4 text-[#7A3DF0]" />
           </div>
-          <p className="text-xl font-bold font-mono text-[#F5F3EA]">{subjects.length} Subjects</p>
-          <p className="text-[11px] text-[#A7AEC2] mt-1">{labsCount} Practical / Lab Slots</p>
+          <p className="text-2xl font-extrabold text-[#171717]">{subjects.length} Subjects</p>
+          <p className="text-[11px] font-medium text-[#7A7A7A] mt-1">{labsCount} Practical / Lab Slots</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-[#0F1422] border border-[#252D42]">
-          <div className="flex items-center justify-between text-xs text-[#70788F] mb-1">
-            <span>Weekly Periods</span>
-            <Clock className="w-3.5 h-3.5 text-[#38BDF8]" />
+        <div className="p-5 rounded-[24px] bg-[#FFFDF8] border border-[#E8E3D7] shadow-sm hover:-translate-y-1 transition-all">
+          <div className="flex items-center justify-between text-xs text-[#7A7A7A] mb-1">
+            <span className="font-semibold">Weekly Periods</span>
+            <Clock className="w-4 h-4 text-[#4C6EF5]" />
           </div>
-          <p className="text-xl font-bold font-mono text-[#F5F3EA]">{entries.length} Classes/Wk</p>
-          <p className="text-[11px] text-[#38BDF8] mt-1">Exact Times from PDF</p>
+          <p className="text-2xl font-extrabold text-[#171717]">{entries.length} Classes/Wk</p>
+          <p className="text-[11px] font-medium text-[#4C6EF5] mt-1">Exact Times from PDF</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-[#0F1422] border border-[#252D42]">
-          <div className="flex items-center justify-between text-xs text-[#70788F] mb-1">
-            <span>Validation Status</span>
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#35D07F]" />
+        <div className="p-5 rounded-[24px] bg-[#FFFDF8] border border-[#E8E3D7] shadow-sm hover:-translate-y-1 transition-all">
+          <div className="flex items-center justify-between text-xs text-[#7A7A7A] mb-1">
+            <span className="font-semibold">Validation Status</span>
+            <CheckCircle2 className="w-4 h-4 text-[#45B36B]" />
           </div>
-          <p className="text-sm font-bold text-[#35D07F]">Timetable Loaded ✓</p>
-          <p className="text-[10px] text-[#70788F] mt-1 font-mono">
+          <p className="text-sm font-bold text-[#45B36B]">Timetable Loaded ✓</p>
+          <p className="text-[10px] text-[#7A7A7A] mt-1 font-mono">
             ✓ Section ✓ Slot ✓ Duplicates OK
           </p>
         </div>
@@ -314,13 +314,13 @@ export default function TimetableView({
       {/* Timetable Header Info Bar */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-semibold text-[#F5F3EA]">
+          <h2 className="text-base font-bold text-[#171717]">
             {currentSection?.name || "Timetable"}
           </h2>
-          <p className="text-xs text-[#70788F] flex items-center gap-2 mt-0.5">
+          <p className="text-xs text-[#7A7A7A] flex items-center gap-2 mt-0.5">
             <span>SRM IST • {currentSection?.year} • {currentSection?.semester}</span>
-            <span className="text-[#252D42]">•</span>
-            <span className="flex items-center gap-1 text-[#35D07F]">
+            <span className="text-[#E8E3D7]">•</span>
+            <span className="flex items-center gap-1 text-[#45B36B] font-medium">
               <CheckCircle2 className="w-3.5 h-3.5" />
               Verified Deterministic Parser
             </span>
@@ -328,45 +328,45 @@ export default function TimetableView({
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs px-2.5 py-1 rounded bg-[#151B2B] text-[#A7AEC2] border border-[#252D42] flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-[#7C5CFF]" />
+          <span className="text-xs px-3 py-1.5 rounded-full bg-[#FAFAFC] text-[#171717] border border-[#E8E3D7] flex items-center gap-1.5 font-medium shadow-sm">
+            <MapPin className="w-3.5 h-3.5 text-[#7A3DF0]" />
             {currentSection?.venue || "Main Campus"}
           </span>
-          <span className="text-xs px-2.5 py-1 rounded bg-[#7C5CFF]/15 text-[#9278FF] border border-[#7C5CFF]/30 font-semibold font-mono">
+          <span className="text-xs px-3 py-1.5 rounded-full bg-[#FFD81A]/20 text-[#171717] border border-[#FFD81A]/50 font-bold font-mono">
             {currentSection?.name}
           </span>
         </div>
       </div>
 
       {/* Timetable Grid Table */}
-      <div className="rounded-xl bg-[#0F1422] border border-[#252D42] overflow-x-auto shadow-sm">
+      <div className="rounded-[24px] bg-[#FFFDF8] border border-[#E8E3D7] overflow-x-auto shadow-sm">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="bg-[#151B2B] border-b border-[#252D42]">
-              <th className="p-3 text-[#70788F] font-semibold uppercase tracking-wider text-[11px] w-24">
+            <tr className="bg-[#FAFAFC] border-b border-[#E8E3D7]">
+              <th className="p-4 text-[#7A7A7A] font-bold uppercase tracking-wider text-[11px] w-28">
                 Day / Period
               </th>
               {periods.map((p, idx) => (
                 <th
                   key={idx}
-                  className={`p-2.5 text-center border-l border-[#252D42]/60 text-[11px] ${
-                    p.label ? "bg-[#080B14]/80 text-[#70788F] w-14" : "text-[#A7AEC2]"
+                  className={`p-3 text-center border-l border-[#E8E3D7] text-[11px] ${
+                    p.label ? "bg-[#F7F4E8]/60 text-[#7A7A7A] w-16" : "text-[#171717]"
                   }`}
                 >
-                  <span className="block font-bold text-[#F5F3EA]">
+                  <span className="block font-bold text-[#171717]">
                     {p.label ? "" : `P${p.num}`}
                   </span>
-                  <span className="text-[10px] text-[#70788F] font-mono block whitespace-nowrap">
+                  <span className="text-[10px] text-[#7A7A7A] font-medium block whitespace-nowrap">
                     {p.time}
                   </span>
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#252D42]/60">
+          <tbody className="divide-y divide-[#E8E3D7]">
             {days.map((day) => (
-              <tr key={day} className="hover:bg-[#151B2B]/40 transition-colors">
-                <td className="p-3 font-semibold text-[#F5F3EA] bg-[#151B2B]/50 whitespace-nowrap">
+              <tr key={day} className="hover:bg-[#FAFAFC]/60 transition-colors">
+                <td className="p-4 font-bold text-[#171717] bg-[#FAFAFC] whitespace-nowrap">
                   {day}
                 </td>
                 {periods.map((p, idx) => {
@@ -374,7 +374,7 @@ export default function TimetableView({
                     return (
                       <td
                         key={idx}
-                        className="p-2 text-center border-l border-[#252D42]/60 bg-[#080B14]/60 text-[9px] font-mono text-[#70788F] tracking-widest uppercase select-none"
+                        className="p-2 text-center border-l border-[#E8E3D7] bg-[#F7F4E8]/40 text-[9px] font-mono text-[#7A7A7A] tracking-widest uppercase select-none"
                       >
                         {p.label === "LUNCH BREAK" ? "LUNCH" : "BREAK"}
                       </td>
@@ -386,7 +386,7 @@ export default function TimetableView({
                     return (
                       <td
                         key={idx}
-                        className="p-2 text-center border-l border-[#252D42]/60 text-[#70788F]/40"
+                        className="p-2 text-center border-l border-[#E8E3D7] text-[#7A7A7A]/40"
                       >
                         —
                       </td>
@@ -398,22 +398,22 @@ export default function TimetableView({
                   return (
                     <td
                       key={idx}
-                      className="p-2 text-center border-l border-[#252D42]/60 hover:bg-[#151B2B] transition-colors"
+                      className="p-2 text-center border-l border-[#E8E3D7] hover:bg-[#FFFDF8] transition-colors"
                     >
                       <div
-                        className={`p-1.5 rounded border text-[11px] ${
+                        className={`p-2 rounded-xl border text-[11px] transition-all hover:shadow-sm ${
                           isLab
-                            ? "bg-[#38BDF8]/10 border-[#38BDF8]/30 text-[#38BDF8]"
-                            : "bg-[#151B2B] border-[#252D42] text-[#F5F3EA]"
+                            ? "bg-[#4C6EF5]/10 border-[#4C6EF5]/30 text-[#4C6EF5]"
+                            : "bg-[#FAFAFC] border-[#E8E3D7] text-[#171717]"
                         }`}
                       >
                         <span className="font-bold block tracking-tight">
                           Slot {cell.slot_code || cell.subject_code}
                         </span>
-                        <span className="text-[10px] text-[#A7AEC2] block truncate max-w-[90px] mx-auto">
+                        <span className="text-[10px] text-[#7A7A7A] block truncate max-w-[95px] mx-auto font-medium">
                           {cell.subject_code}
                         </span>
-                        <span className="text-[9px] text-[#70788F] block font-mono">
+                        <span className="text-[9px] text-[#7A7A7A] block font-mono">
                           {cell.room}
                         </span>
                       </div>
@@ -426,18 +426,18 @@ export default function TimetableView({
         </table>
       </div>
 
-      {/* Subject Mapping Table (Section 16: Parser resolves slot letters to subjects) */}
-      <div className="p-5 rounded-xl bg-[#0F1422] border border-[#252D42]">
+      {/* Subject Mapping Table */}
+      <div className="p-6 rounded-[24px] bg-[#FFFDF8] border border-[#E8E3D7] shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-xs font-bold text-[#F5F3EA] uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-[#171717] uppercase tracking-wider">
               Subject Slot Mappings &amp; Faculty Allocations
             </h3>
-            <p className="text-[11px] text-[#70788F]">
+            <p className="text-[11px] text-[#7A7A7A] mt-0.5">
               Deterministic slot letter resolution mapping table from SRM IST academic database ({currentSection?.name})
             </p>
           </div>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#35D07F]/10 text-[#35D07F] border border-[#35D07F]/25">
+          <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-[#45B36B]/10 text-[#45B36B] font-bold border border-[#45B36B]/30">
             ALL {subjects.length} SLOTS RESOLVED
           </span>
         </div>
@@ -445,27 +445,27 @@ export default function TimetableView({
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-[#252D42] text-[11px] text-[#70788F]">
-                <th className="pb-2 font-medium w-16">Slot</th>
-                <th className="pb-2 font-medium w-28">Sub. Code</th>
-                <th className="pb-2 font-medium">Subject Name</th>
-                <th className="pb-2 font-medium w-24">L-T-P-C</th>
-                <th className="pb-2 font-medium">Faculty Member</th>
-                <th className="pb-2 font-medium w-28">Unit Rule</th>
+              <tr className="border-b border-[#E8E3D7] text-[11px] text-[#7A7A7A] uppercase font-semibold">
+                <th className="pb-3 w-16">Slot</th>
+                <th className="pb-3 w-28">Sub. Code</th>
+                <th className="pb-3">Subject Name</th>
+                <th className="pb-3 w-24">L-T-P-C</th>
+                <th className="pb-3">Faculty Member</th>
+                <th className="pb-3 w-28">Unit Rule</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#252D42]/60 text-[#A7AEC2]">
+            <tbody className="divide-y divide-[#E8E3D7] text-[#171717]">
               {subjects.map((s, idx) => (
-                <tr key={idx} className="hover:bg-[#151B2B]/40 transition-colors">
-                  <td className="py-2.5 font-bold font-mono text-[#7C5CFF]">
+                <tr key={idx} className="hover:bg-[#FAFAFC]/60 transition-colors">
+                  <td className="py-3 font-bold font-mono text-[#7A3DF0]">
                     {s.slot_code || "—"}
                   </td>
-                  <td className="py-2.5 font-mono text-[#F5F3EA]">{s.code}</td>
-                  <td className="py-2.5 text-[#F5F3EA] font-medium">{s.name}</td>
-                  <td className="py-2.5 font-mono text-[11px] text-[#70788F]">{s.credit}</td>
-                  <td className="py-2.5 text-[11px]">{s.faculty_name || "Faculty Member"}</td>
-                  <td className="py-2.5">
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#151B2B] text-[#F5F3EA] border border-[#252D42] font-mono">
+                  <td className="py-3 font-mono font-medium text-[#171717]">{s.code}</td>
+                  <td className="py-3 text-[#171717] font-semibold">{s.name}</td>
+                  <td className="py-3 font-mono text-[11px] text-[#7A7A7A]">{s.credit}</td>
+                  <td className="py-3 text-[11px] text-[#7A7A7A]">{s.faculty_name || "Faculty Member"}</td>
+                  <td className="py-3">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FAFAFC] text-[#171717] border border-[#E8E3D7] font-mono font-semibold">
                       {s.attendance_unit || "PERIOD"}
                     </span>
                   </td>
